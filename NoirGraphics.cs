@@ -186,6 +186,9 @@ public partial class NoirCatto
             
             sleaser.sprites[EarSpr].MoveInFrontOfOtherNode(sleaser.sprites[HeadSpr]);
             sleaser.sprites[EarSpr2].MoveInFrontOfOtherNode(sleaser.sprites[HeadSpr]);
+            
+            sleaser.sprites[TailSpr].MoveBehindOtherNode(sleaser.sprites[BodySpr]);
+            sleaser.sprites[LegsSpr].MoveBehindOtherNode(sleaser.sprites[BodySpr]);
         }
     }
     
@@ -297,8 +300,18 @@ public partial class NoirCatto
                 sleaser.sprites[EarSpr].MoveBehindOtherNode(sleaser.sprites[BodySpr]);
                 sleaser.sprites[EarSpr2].MoveInFrontOfOtherNode(sleaser.sprites[HeadSpr]);
             }
-            ((TriangleMesh)sleaser.sprites[EarSpr]).Refresh();
-            ((TriangleMesh)sleaser.sprites[EarSpr2]).Refresh();
+            
+            if ((self.player.animation == Player.AnimationIndex.None && (self.player.input[0].x != 0 && self.player.input[4].x != 0)) || 
+            (self.player.animation == Player.AnimationIndex.StandOnBeam && (self.player.input[0].x != 0 && self.player.input[4].x != 0)) ||
+            self.player.bodyMode == Player.BodyModeIndex.Crawl || 
+            self.player.animation != Player.AnimationIndex.None && self.player.animation != Player.AnimationIndex.Flip && !noirData.OnAnyBeam())
+            {
+                sleaser.sprites[LegsSpr].MoveInFrontOfOtherNode(sleaser.sprites[HipsSpr]);
+            }
+            else
+            {
+                sleaser.sprites[LegsSpr].MoveBehindOtherNode(sleaser.sprites[BodySpr]);
+            }
             #endregion
             
         }

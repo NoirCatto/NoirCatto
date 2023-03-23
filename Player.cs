@@ -8,7 +8,6 @@ namespace NoirCatto;
 public partial class NoirCatto
 {
     #region PlayerData
-    //private static readonly Dictionary<Player, NoirData> NoirDeets = new Dictionary<Player, NoirData>();
     public static readonly ConditionalWeakTable<Player, NoirData> NoirDeets = new ConditionalWeakTable<Player, NoirData>();
     public static NoirData NoirDataCtor(Player cat)
     {
