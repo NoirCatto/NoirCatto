@@ -342,7 +342,7 @@ public partial class NoirCatto
                 case FaceSpr:
                     break; //why do you change this in drawsprites Rain World...
                 default:
-                    sleaser.sprites[index].color = ReColor(sleaser.sprites[index].color, false);;
+                    sleaser.sprites[index].color = ReColor(sleaser.sprites[index].color, false);
                     break;
             }
         }

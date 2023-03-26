@@ -1,3 +1,4 @@
+using System.Linq;
 using MonoMod.Cil;
 using RWCustom;
 using UnityEngine;
@@ -335,5 +336,27 @@ public partial class NoirCatto
             return false;
         }
         return orig(self);
+    }
+    
+    private void SpearOnDrawSprites(On.Spear.orig_DrawSprites orig, Spear self, RoomCamera.SpriteLeaser sleaser, RoomCamera rcam, float timestacker, Vector2 campos)
+    {
+        orig(self, sleaser, rcam, timestacker, campos);
+        
+        if (self.mode == Weapon.Mode.Carried)
+        {
+            var pla = self.grabbedBy.Select(x => x.grabber).FirstOrDefault(x => x is Player);
+            if (pla == null) return;
+            var cat = (Player)pla;
+            if (cat.SlugCatClass != NoirName) return;
+            var noirData = NoirDeets.GetValue(cat, NoirDataCtor);
+            if (cat.animation != Player.AnimationIndex.StandOnBeam) return;
+            if (noirData.Ycounter > YcounterTreshold) return;
+
+            //if (self.abstractSpear.electric) return; //ToDo: Problem child... I'll deal with you later
+            for (var i = 0; i < sleaser.sprites.Length; i++)
+            {
+                sleaser.sprites[i].rotation = 90f * cat.flipDirection;
+            }
+        }
     }
 }

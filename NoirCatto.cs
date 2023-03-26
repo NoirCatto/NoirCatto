@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using UnityEngine;
@@ -11,9 +12,11 @@ using BepInEx.Logging;
 using Menu.Remix.MixedUI;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using MoreSlugcats;
 using On.JollyCoop.JollyMenu;
 using On.Menu;
+using SlugBase;
 using SlugBase.Features;
 using static SlugBase.Features.FeatureTypes;
 using Debug = UnityEngine.Debug;
@@ -59,6 +62,9 @@ public partial class NoirCatto : BaseUnityPlugin
             RwInstance = self;
             LoadAtlases();
 
+            On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
+            On.RainWorldGame.ctor += RainWorldGameOnctor;
+            
             On.Player.ctor += PlayerOnctor;
             On.Player.Update += PlayerOnUpdate;
             On.Player.GrabUpdate += PlayerOnGrabUpdate;
@@ -85,6 +91,7 @@ public partial class NoirCatto : BaseUnityPlugin
             On.Player.ThrowObject += PlayerOnThrowObject;
             IL.Spear.Update += SpearILUpdate;
             On.Spear.Update += SpearOnUpdate;
+            On.Spear.DrawSprites += SpearOnDrawSprites;
             
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectOnRealize;
 
