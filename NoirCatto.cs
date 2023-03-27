@@ -14,8 +14,6 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MoreSlugcats;
-using On.JollyCoop.JollyMenu;
-using On.Menu;
 using SlugBase;
 using SlugBase.Features;
 using static SlugBase.Features.FeatureTypes;
@@ -61,9 +59,14 @@ public partial class NoirCatto : BaseUnityPlugin
 
             RwInstance = self;
             LoadAtlases();
+            LoadSounds();
 
             On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
             On.RainWorldGame.ctor += RainWorldGameOnctor;
+            On.RainWorld.Update += RainWorldOnUpdate;
+            
+            On.Menu.Menu.Update += MenuOnUpdate;
+            On.Menu.Menu.CommunicateWithUpcomingProcess += MenuOnCommunicateWithUpcomingProcess;
             
             On.Player.ctor += PlayerOnctor;
             On.Player.Update += PlayerOnUpdate;
@@ -92,7 +95,7 @@ public partial class NoirCatto : BaseUnityPlugin
             IL.Spear.Update += SpearILUpdate;
             On.Spear.Update += SpearOnUpdate;
             On.Spear.DrawSprites += SpearOnDrawSprites;
-            
+
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectOnRealize;
 
             On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
@@ -106,6 +109,23 @@ public partial class NoirCatto : BaseUnityPlugin
             Logger.LogError(ex);
             throw;
         }
+    }
+
+    private void RainWorldOnUpdate(On.RainWorld.orig_Update orig, RainWorld self)
+    {
+        orig(self);
+
+        if (self.processManager.currentMainLoop is not RainWorldGame game) return;
+        if (game.GamePaused) return;
+        foreach (var absPlayer in game.Players)
+        {
+            var player = (Player)absPlayer.realizedCreature;
+            if (player == null) continue;
+            if (player.SlugCatClass != NoirName) continue;
+            var noirData = NoirDeets.GetValue(player, NoirDataCtor);
+            noirData.Update60FPS();
+        }
+        
     }
 
     private void RainWorldGameOnShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)

@@ -197,7 +197,9 @@ public class CatSlash : Weapon
     public override void PlaceInRoom(Room placeRoom)
     {
         placeRoom.AddObject(this);
-        placeRoom.PlaySound(SoundID.Slugcat_Throw_Rock, firstChunk, false, 0.5f, 1.2f);
+        
+        if (noirData.movementBonus > 0 || noirData.ComboBonus >= 5) placeRoom.PlaySound(NoirCatto.SlashSND, firstChunk);
+        else placeRoom.PlaySound(SoundID.Slugcat_Throw_Rock, firstChunk, false, 0.5f, 1.2f);
     }
 
     public override void Update(bool eu)
@@ -220,14 +222,10 @@ public class CatSlash : Weapon
 
                     var wepDir = Custom.AimFromOneVectorToAnother(wep.firstChunk.lastPos, wep.firstChunk.pos);
                     var thisDir = Custom.AimFromOneVectorToAnother(Owner.firstChunk.pos, firstChunk.pos);
-                    
-                    Debug.Log($"WepDir: {wepDir}");
-                    Debug.Log($"ThisDir: {thisDir}");
 
                     const int maxAngle = 90;
                     if (wepDir + thisDir <= maxAngle && wepDir + thisDir >= -maxAngle)
                     {
-                        Debug.Log($"IT'S A HIT!!");
                         HitAnotherThrownWeapon(wep);
                     }
                 }
@@ -299,8 +297,9 @@ public class CatSlash : Weapon
             {
                 if (liz.HitHeadShield(directionAndMomentum))
                 {
-                    Owner.Stun(25);
+                    Owner.Stun(30);
                     noirData.SlashCooldown = 50;
+                    room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk);
                 }
             }
         }
@@ -343,7 +342,7 @@ public class CatSlash : Weapon
         firstChunk.vel = deflectDir * bounceSpeed * 0.5f;
         ChangeMode(Mode.Free);
         noirData.ClawHit();
-        //room?.PlaySound(SoundID.Death_Lightning_Spark_Spontaneous, Owner.firstChunk, false , 0.1f, 0.5f); //Todo: SoundID.NoirFrustrated
+        room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk);
     }
 
     public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)

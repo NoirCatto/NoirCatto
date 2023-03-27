@@ -43,7 +43,7 @@ public partial class NoirCatto
                 if (pState.playerNumber == 0 && pState.slugcatCharacter == NoirName)
                 {
                     player.pos.Tile = new IntVector2(11, 77);
-                    player.Room.realizedRoom.AddObject(new NoirStart()); //ToDo: Toggle option
+                    if (Options.UseNoirStart.Value) player.Room.realizedRoom.AddObject(new NoirStart());
                 }
                 else
                 {
@@ -116,7 +116,11 @@ public partial class NoirCatto
                     if (Cat.abstractCreature.pos.x <= 5) NextPhase();
                     break;
                 case 4:
-                    if (Cat.abstractCreature.pos.x >= 11) NextPhase();
+                    if (Cat.abstractCreature.pos.x >= 11)
+                    {
+                        Cat.room?.PlaySound(Meow2SND, Cat.firstChunk);
+                        NextPhase();
+                    };
                     break;
                 case 5:
                     if (Custom.DistLess(Cat.firstChunk.pos, Squiddy.firstChunk.pos, 40f)) NextPhase(); //If close to Squidcada, hit it.
@@ -138,7 +142,7 @@ public partial class NoirCatto
                 case 9:
                     if (Cat.grabbedBy.Count > 0)
                     {
-                        foreach (var villain in Cat.grabbedBy) //Centichildren like me too much
+                        foreach (var villain in Cat.grabbedBy.ToArray()) //Centichildren like me too much
                         {
                             villain.Release();
                         }

@@ -42,10 +42,10 @@ public partial class NoirCatto
             get => comboBonus + movementBonus;
             set => comboBonus = value;
         }
-        private int comboBonus;
-        private int movementBonus;
-        private int comboTimer;
-        private int rjumpCounter;
+        public int comboBonus;
+        public int movementBonus;
+        public int comboTimer;
+        public int rjumpCounter;
 
         private Player.AnimationIndex lastAnimationInternal;
         private Player.BodyModeIndex lastBodyModeInternal;
@@ -144,6 +144,18 @@ public partial class NoirCatto
 
             lastBodyModeInternal = Cat.bodyMode;
             lastAnimationInternal = Cat.animation;
+        }
+
+        public void Update60FPS()
+        {
+            //Meow!
+            if (Cat.stun == 0 && !Cat.dead && Cat.controller is not NoirStartController)
+            {
+                if (Input.GetKeyDown(Options.MeowKey.Value))
+                {
+                    Cat.room?.PlaySound(MeowSND, Cat.firstChunk);
+                }
+            }
         }
     }
     #endregion

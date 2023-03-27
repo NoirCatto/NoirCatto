@@ -54,7 +54,7 @@ public partial class NoirCatto
 
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
         
-        if ((!Options.AlternativeSlashConditions.Value && CanSlash(self) || Options.AlternativeSlashConditions.Value && noirData.LastFirstGraspNull) 
+        if ((!Options.AlternativeSlashConditions.Value && (CanSlash(self) && noirData.LastGraspsAnyNull)|| Options.AlternativeSlashConditions.Value && noirData.LastFirstGraspNull) 
             && self.grasps[grasp].grabbed is not Creature)
         {
             return;
