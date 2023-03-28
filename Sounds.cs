@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using RWCustom;
 using UnityEngine;
@@ -36,6 +37,8 @@ public partial class NoirCatto
 
         if (self.manager.oldProcess is not RainWorldGame game) return;
         if (game.StoryCharacter != NoirName) return;
+        if (self is not Menu.SleepAndDeathScreen sleep) return;
+        if (Math.Min(sleep.hud.owner.CurrentFood + sleep.hud.foodMeter.survivalLimit, sleep.hud.foodMeter.maxFood) < sleep.hud.foodMeter.maxFood) return;
         
         if (PurrLoop != null)
         {
@@ -46,7 +49,7 @@ public partial class NoirCatto
         {
             if (self.manager.menuMic != null)
             {
-                var flag = self.manager.menuMic.soundObjects.Any(t => t is MenuMicrophone.MenuSoundLoop && (t as MenuMicrophone.MenuSoundLoop).isBkgLoop && ((self.mySoundLoopID != SoundID.None && t.soundData.soundID == self.mySoundLoopID) || (self.mySoundLoopName != "" && t.soundData.soundName == self.mySoundLoopName)));
+                var flag = self.manager.menuMic.soundObjects.Any(t => t is MenuMicrophone.MenuSoundLoop loop && loop.isBkgLoop && ((self.mySoundLoopID != SoundID.None && t.soundData.soundID == self.mySoundLoopID) || (self.mySoundLoopName != "" && t.soundData.soundName == self.mySoundLoopName)));
                 if (!flag && self.mySoundLoopID == SoundID.MENU_Sleep_Screen_LOOP)
                 {
                     PurrLoop = self.PlayLoop(PurrLoopSND, 0f, 1f, 1f, true);
@@ -61,8 +64,7 @@ public partial class NoirCatto
         
         if (nextprocess is not Menu.Menu menu || ((self.mySoundLoopID == SoundID.None || menu.mySoundLoopID != self.mySoundLoopID) && (self.mySoundLoopName == "" || menu.mySoundLoopName != self.mySoundLoopName)))
         {
-            if (PurrLoop == null)
-                return;
+            if (PurrLoop == null) return;
             PurrLoop.Destroy();
         }
     }
