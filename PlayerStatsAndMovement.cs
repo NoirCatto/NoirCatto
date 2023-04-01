@@ -28,7 +28,7 @@ public partial class NoirCatto
             self.bodyWeightFac = 0.90f;
             self.throwingSkill = 1;
 
-            self.runspeedFac = 0.8f; //1.3
+            self.runspeedFac = 0.8f;
             self.poleClimbSpeedFac = 1.35f;
             self.corridorClimbSpeedFac = 1.4f;
 

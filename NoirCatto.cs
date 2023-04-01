@@ -65,8 +65,17 @@ public partial class NoirCatto : BaseUnityPlugin
             On.RainWorldGame.ctor += RainWorldGameOnctor;
             On.RainWorld.Update += RainWorldOnUpdate;
             
+            IL.GhostWorldPresence.SpawnGhost += GhostWorldPresenceILSpawnGhost; //Fix echoes not spawning for slugs with karma cap below 4
+            IL.Menu.KarmaLadderScreen.GetDataFromGame += KarmaLadderScreenILGetDataFromGame; //Fix MSC breaking echoes upgrade screen for slugs with karma cap below 4
+
             On.Menu.Menu.Update += MenuOnUpdate;
             On.Menu.Menu.CommunicateWithUpcomingProcess += MenuOnCommunicateWithUpcomingProcess;
+            
+            On.SSOracleBehavior.PebblesConversation.AddEvents += PebblesConversationOnAddEvents;
+            IL.SSOracleBehavior.Update += SSOracleBehaviorOnUpdate;
+            IL.SSOracleBehavior.SeePlayer += SSOracleBehaviorILSeePlayer;
+            
+            On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversationOnAddEvents;
             
             On.Player.ctor += PlayerOnctor;
             On.Player.Update += PlayerOnUpdate;
@@ -125,7 +134,6 @@ public partial class NoirCatto : BaseUnityPlugin
             var noirData = NoirDeets.GetValue(player, NoirDataCtor);
             noirData.Update60FPS();
         }
-        
     }
 
     private void RainWorldGameOnShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
