@@ -111,6 +111,23 @@ public partial class NoirCatto
     {
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
         
+        // //AutoSlash hack
+        // if (noirData.SlashCooldown > 0) return;
+        // for (var i = 0; i < self.room.physicalObjects.Length; i++)
+        // {
+        //     for (var j = 0; j < self.room.physicalObjects[i].Count; j++)
+        //     {
+        //         if (self.room.physicalObjects[i][j] is Spear spir && spir.mode == Weapon.Mode.Thrown && 
+        //             Custom.DistLess(self.firstChunk.pos, spir.firstChunk.pos, spir.firstChunk.vel.magnitude * 3f + spir.firstChunk.rad + 30f) &&
+        //             spir.thrownBy != self)
+        //         {
+        //             var slash = new AbstractCatSlash(self.room.world, CatSlash, null, self.abstractCreature.pos, self.room.game.GetNewID(), self);
+        //             noirData.SlashCooldown = 40;
+        //             slash.RealizeInRoom();
+        //         }
+        //     }
+        // }
+        
         if (noirData.SlashCooldown > 0) return;
         if (!Options.AlternativeSlashConditions.Value && (self.input[0].thrw && !self.input[1].thrw && (noirData.LastGraspsNull || noirData.LastGraspsAnyNull && 
         (CanSlash(self) || !self.IsObjectThrowable(self.grasps[0]?.grabbed) || !self.IsObjectThrowable(self.grasps[1]?.grabbed)))) 
