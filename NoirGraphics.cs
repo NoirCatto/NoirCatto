@@ -23,6 +23,8 @@ public partial class NoirCatto
     }
 
     #region Consts
+    private static readonly string[] ValidSpriteNames = new[] { "Head", "Face", "BodyA", "HipsA", "PlayerArm", "Legs", "Tail", "Futile_White" };
+    
     private const string NoirHead = "NoirHead";
     private const string NoirEars = "NoirEars";
     private const string NoirFace = "NoirFace";
@@ -50,7 +52,7 @@ public partial class NoirCatto
 
     private List<int> SprToReplace = new List<int>()
     {
-        HeadSpr, FaceSpr, BodySpr, ArmSpr, ArmSpr2, HipsSpr, LegsSpr
+        HeadSpr, FaceSpr, BodySpr, ArmSpr, ArmSpr2, HipsSpr, LegsSpr, TailSpr
     };
 
     private const int NewSprites = 2;
@@ -62,9 +64,19 @@ public partial class NoirCatto
     {
         foreach (var num in SprToReplace)
         {
-            if (!sleaser.sprites[num].element.name.StartsWith(Noir))
+            var spr = sleaser.sprites[num].element;
+            
+            if (!spr.name.StartsWith(Noir))
             {
-                sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(Noir + sleaser.sprites[num].element.name);
+                if (!ValidSpriteNames.Any(spr.name.StartsWith)) //For DMS compatibility :)
+                {
+                    continue;
+                }
+
+                if (num == TailSpr)
+                    sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(NoirTail);
+                else 
+                    sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(Noir + spr.name);
             }
         }
     }
@@ -201,7 +213,8 @@ public partial class NoirCatto
             var noirData = NoirDeets.GetValue(self.player, NoirDataCtor);
             
             ReplaceSprites(sleaser);
-            sleaser.sprites[FaceSpr].color = Color.white;
+            if (sleaser.sprites[FaceSpr].element.name.StartsWith(Noir)) //For DMS compatibility :)
+                sleaser.sprites[FaceSpr].color = Color.white;
             
             var drawPosChunk0 = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timestacker);
             var drawPosChunk1 = Vector2.Lerp(self.drawPositions[1, 1], self.drawPositions[1, 0], timestacker);
@@ -333,6 +346,8 @@ public partial class NoirCatto
 
         for (var index = 0; index < sleaser.sprites.Length; ++index)
         {
+            if (!sleaser.sprites[index].element.name.StartsWith(Noir)) continue; //For DMS compatibility :)
+            
             switch (index)
             {
                 case OTOTArmSpr:
@@ -350,7 +365,6 @@ public partial class NoirCatto
         //Thank you CustomTails ;-;
         if (sleaser.sprites[TailSpr] is TriangleMesh tailMesh)
         {
-            tailMesh.element = Futile.atlasManager.GetElementWithName(NoirTail);
             if (tailMesh.verticeColors == null || tailMesh.verticeColors.Length != tailMesh.vertices.Length)
             {
                 tailMesh.verticeColors = new Color[tailMesh.vertices.Length];

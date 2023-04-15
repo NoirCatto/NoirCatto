@@ -61,6 +61,7 @@ public partial class NoirCatto : BaseUnityPlugin
             LoadAtlases();
             LoadSounds();
 
+            On.RegionGate.customOEGateRequirements += RegionGateOncustomOEGateRequirements;
             On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
             On.RainWorldGame.ctor += RainWorldGameOnctor;
             On.RainWorld.Update += RainWorldOnUpdate;

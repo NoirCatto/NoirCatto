@@ -52,6 +52,17 @@ public partial class NoirCatto
             }
         }
     }
+    
+    private bool RegionGateOncustomOEGateRequirements(On.RegionGate.orig_customOEGateRequirements orig, RegionGate self)
+    {
+        var result = orig(self);
+        if (!ModManager.MSC) return result;
+        if (self.room.game.session is not StoryGameSession session) return result;
+        if (session.saveStateNumber != NoirName) return result;
+
+        if (session.saveState.deathPersistentSaveData.theMark) result = true;
+        return result;
+    }
 
     public class NoirStart : UpdatableAndDeletable
     {

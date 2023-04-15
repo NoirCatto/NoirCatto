@@ -291,6 +291,9 @@ public class CatSlash : Weapon
         {
             if (crit == Owner) return false;
             if (CreaturesHit.Contains(crit)) return false;
+            if (((ModManager.CoopAvailable && !Custom.rainWorld.options.friendlyFire) || 
+                 room.game.IsArenaSession && !room.game.GetArenaGameSession.arenaSitting.gameTypeSetup.spearsHitPlayers ) && 
+                crit is Player) return false;
             
             var smallCrit = NoirCatto.IsSmallerThanMe(Owner, crit);
             //
