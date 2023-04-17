@@ -23,7 +23,7 @@ public partial class NoirCatto
     }
 
     #region Consts
-    private static readonly string[] ValidSpriteNames = new[] { "Head", "Face", "BodyA", "HipsA", "PlayerArm", "Legs", "Tail", "Futile_White" };
+    private static readonly string[] ValidSpriteNames = new[] { "Head", "Face", "PFace", "BodyA", "HipsA", "PlayerArm", "Legs", "Tail", "Futile_White" };
     
     private const string NoirHead = "NoirHead";
     private const string NoirEars = "NoirEars";
@@ -75,8 +75,29 @@ public partial class NoirCatto
 
                 if (num == TailSpr)
                     sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(NoirTail);
-                else 
+                else
+                {
+                    if (num == HeadSpr) //Pup Fix
+                    {
+                        //Logger.LogInfo($"Head Name: {sleaser.sprites[num].element.name}");
+                        if (!sleaser.sprites[num].element.name.Contains("HeadA"))
+                        {
+                            sleaser.sprites[num].element.name = spr.name.Replace("HeadB", "HeadA");
+                            sleaser.sprites[num].element.name = spr.name.Replace("HeadC", "HeadA");
+                            sleaser.sprites[num].element.name = spr.name.Replace("HeadD", "HeadA");
+                        }
+                        //Logger.LogInfo($"New Head Name: {sleaser.sprites[num].element.name}");
+                    }
+                    else if (num == FaceSpr) //Pup Fix
+                    {
+                        if (sleaser.sprites[num].element.name.Contains("PFace"))
+                        {
+                            sleaser.sprites[num].element.name = spr.name.Replace("PFace", "Face");
+                        }
+                    }
                     sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(Noir + spr.name);
+                }
+
             }
         }
     }
