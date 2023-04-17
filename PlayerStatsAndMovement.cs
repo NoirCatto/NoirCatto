@@ -122,7 +122,19 @@ public partial class NoirCatto
     }
     #endregion
     #endregion
-    private void PlayerILUpdateBodyMode(ILContext il)
+    private void PlayerOnUpdateBodyMode(On.Player.orig_UpdateBodyMode orig, Player self)
+    {
+        orig(self);
+        if (self.SlugCatClass != NoirName) return;
+        //var noirData = NoirDeets.GetValue(self, NoirDataCtor);
+        
+        if (self.bodyMode != Player.BodyModeIndex.Crawl) return;
+        //Crawl boost
+        self.dynamicRunSpeed[0] = 2.5f * CrawlSpeedFac;
+        self.dynamicRunSpeed[1] = 2.5f * CrawlSpeedFac;
+    }
+    
+    private void PlayerILUpdateBodyMode(ILContext il) //Obsolete, using normal hook instead
     {
         try
         {
@@ -157,9 +169,25 @@ public partial class NoirCatto
             Logger.LogError(ex);
             throw;
         }
-    }
+    } 
 
-    private void PlayerILUpdateAnimation(ILContext il)
+    private void PlayerOnUpdateAnimation(On.Player.orig_UpdateAnimation orig, Player self)
+    {
+        orig(self);
+        if (self.SlugCatClass != NoirName) return;
+        if (self.animation != Player.AnimationIndex.StandOnBeam) return;
+
+        var noirData = NoirDeets.GetValue(self, NoirDataCtor);
+        
+        if (noirData.Ycounter < YcounterTreshold)
+        {
+            //Boost while standing on horizontal pole
+            self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+            self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+        }
+    }
+    
+    private void PlayerILUpdateAnimation(ILContext il) //Obsolete, using normal hook instead
     {
         try
         {

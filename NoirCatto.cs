@@ -84,8 +84,10 @@ public partial class NoirCatto : BaseUnityPlugin
             On.Player.AllowGrabbingBatflys += PlayerOnAllowGrabbingBatflys;
             On.Player.PickupCandidate += PlayerOnPickupCandidate;
             On.SlugcatStats.ctor += SlugcatStatsOnctor;
-            IL.Player.UpdateBodyMode += PlayerILUpdateBodyMode;
-            IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
+            //IL.Player.UpdateBodyMode += PlayerILUpdateBodyMode;
+            On.Player.UpdateBodyMode += PlayerOnUpdateBodyMode;
+            //IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
+            On.Player.UpdateAnimation += PlayerOnUpdateAnimation;
             On.Player.MovementUpdate += PlayerOnMovementUpdate;
             //IL.Player.MovementUpdate += PlayerILMovementUpdate; //Breaks grabbing vertical poles, using a hacky normal hook instead
             On.Player.Jump += PlayerOnJump;
