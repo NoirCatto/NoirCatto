@@ -107,7 +107,6 @@ public partial class NoirCatto
     
     private void SpearOnUpdate(On.Spear.orig_Update orig, Spear self, bool eu)
     {
-        orig(self, eu);
         if (self.thrownBy is Player pl && pl.SlugCatClass == NoirName)
         {
             if (Custom.DistLess(self.thrownPos, self.firstChunk.pos, 75f) ||  NoirDeets.GetValue(pl, NoirDataCtor).SpearThrownAnimation == Player.AnimationIndex.BellySlide)
@@ -119,6 +118,7 @@ public partial class NoirCatto
                 self.alwaysStickInWalls = false;
             }
         }
+        orig(self, eu);
     }
     #endregion
     #endregion
