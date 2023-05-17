@@ -427,7 +427,7 @@ public class CatSlash : Weapon
     
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        sLeaser.sprites[1].isVisible = false; //Debug flag
+        sLeaser.sprites[1].isVisible = true; //Debug flag
         var vector2_1 = Vector2.Lerp(this.firstChunk.lastPos, this.firstChunk.pos, timeStacker);
         if (this.vibrate > 0)
             vector2_1 += Custom.DegToVec(Random.value * 360f) * 2f * Random.value;
