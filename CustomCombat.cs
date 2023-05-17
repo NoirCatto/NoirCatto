@@ -29,9 +29,16 @@ public partial class NoirCatto
                     && (Custom.DistLess(self.bodyChunks[0].pos, self.room.physicalObjects[i][j].bodyChunks[0].pos, self.room.physicalObjects[i][j].bodyChunks[0].rad + 20f) 
                         || self.room.VisualContact(self.bodyChunks[0].pos, self.room.physicalObjects[i][j].bodyChunks[0].pos)) && self.CanIPickThisUp(self.room.physicalObjects[i][j]))
                 {
-                    if (self.room.physicalObjects[i][j] is Creature crit && crit.stun >= 20)
+                    if (self.room.physicalObjects[i][j] is Creature crit)
                     {
-                        return crit;
+                        if (crit.stun >= 20)
+                        {
+                            if (crit.State is HealthState healthState)
+                            {
+                                if (healthState.health <= 0) return crit;
+                            }
+                            else if (!crit.State.dead) return crit;
+                        }
                     }
                 }
             }
@@ -176,8 +183,9 @@ public class CatSlash : Weapon
         airFriction = 0.999f;
         gravity = 0f;
         bounce = 0f;
-        surfaceFriction = 0f;
-        waterFriction = 0f;
+        surfaceFriction = 0.999f;
+        waterFriction = 0.999f;
+        waterRetardationImmunity = 1f;
         buoyancy = 0f;
         exitThrownModeSpeed = float.MinValue;
         rotation = Vector2.zero;
