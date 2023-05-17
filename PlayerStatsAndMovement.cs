@@ -179,9 +179,9 @@ public partial class NoirCatto
 
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
         
-        if (noirData.Ycounter < YcounterTreshold)
+        if (noirData.CanCrawlOnBeam())
         {
-            //Boost while standing on horizontal pole
+            //Boost while crawling on horizontal pole
             self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
             self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
         }
@@ -218,9 +218,9 @@ public partial class NoirCatto
             
             c.EmitDelegate((Player self) =>
             {
-                if (self.SlugCatClass == NoirName && NoirDeets.GetValue(self, NoirDataCtor).Ycounter < YcounterTreshold)
+                if (self.SlugCatClass == NoirName && NoirDeets.GetValue(self, NoirDataCtor).CanCrawlOnBeam())
                 {
-                    //Boost while standing on horizontal pole
+                    //Boost while crawling on horizontal pole
                     self.dynamicRunSpeed[0] = (2.1f + 0.4f) * CrawlSpeedFac + 0f;
                     self.dynamicRunSpeed[1] = (2.1f + 0.4f) * CrawlSpeedFac + 0f;
                 }

@@ -84,6 +84,27 @@ public partial class NoirCatto
         #endregion
 
         public bool jumpInitiated;
+
+        public bool CanCrawlOnBeam()
+        {
+            var graphics = (PlayerGraphics)Cat.graphicsModule;
+            if (graphics == null || Cat.room == null) return false;
+
+            var beamLengthL = 0;
+            var beamLengthR = 0;
+            while (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.legs.pos + new Vector2(beamLengthR, 0f))).horizontalBeam)
+            {
+                beamLengthR++;
+            }
+            while (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.legs.pos + new Vector2(-beamLengthL, 0f))).horizontalBeam)
+            {
+                beamLengthL++;
+            }
+        
+            //Debug.Log($"BEAM LENGTH - LEFT: {beamLengthL}, RIGHT: {beamLengthR}, TOTAL: {beamLengthL + beamLengthR}");
+        
+            return (Cat.animation == Player.AnimationIndex.StandOnBeam && beamLengthL + beamLengthR > 100 && Ycounter < YcounterTreshold);
+        }
         
         public void ClawHit()
         {

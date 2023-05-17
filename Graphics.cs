@@ -22,7 +22,7 @@ public partial class NoirCatto
         var dirVec = (self.player.bodyChunks[0].pos - self.player.bodyChunks[1].pos).normalized;
         
         //Adjusting draw positions slightly
-        if (self.player.animation == Player.AnimationIndex.StandOnBeam && noirData.Ycounter < YcounterTreshold)
+        if (noirData.CanCrawlOnBeam())
         {
             if (self.player.input[0].x != 0)
             {
@@ -318,7 +318,7 @@ public partial class NoirCatto
         if (player.SlugCatClass != NoirName) return orig(self);
         var noirData = NoirDeets.GetValue(player, NoirDataCtor);
         
-        if (player.animation == Player.AnimationIndex.StandOnBeam && noirData.Ycounter < YcounterTreshold) 
+        if (noirData.CanCrawlOnBeam()) 
         {
             //Crawl anim code while on beams!
             self.mode = Limb.Mode.HuntAbsolutePosition;
@@ -349,8 +349,7 @@ public partial class NoirCatto
             var cat = (Player)pla;
             if (cat.SlugCatClass != NoirName) return;
             var noirData = NoirDeets.GetValue(cat, NoirDataCtor);
-            if (cat.animation != Player.AnimationIndex.StandOnBeam) return;
-            if (noirData.Ycounter > YcounterTreshold) return;
+            if (!noirData.CanCrawlOnBeam()) return;
 
             //if (self.abstractSpear.electric) return; //ToDo: Problem child... I'll deal with you later
             for (var i = 0; i < sleaser.sprites.Length; i++)
