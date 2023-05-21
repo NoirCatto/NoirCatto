@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using MoreSlugcats;
 using RWCustom;
 using UnityEngine;
 
@@ -34,16 +35,18 @@ public partial class NoirCatto
         public bool LastGraspsNull;
         public bool LastGraspsAnyNull;
         public bool LastFirstGraspNull;
+        public float MeowPitch = 1f;
         
 
         public int SlashCooldown;
         public int ComboBonus
         {
-            get => comboBonus + movementBonus;
-            set => comboBonus = value;
+            get => _comboBonus + movementBonus + rotundnessBonus;
+            set => _comboBonus = value;
         }
-        public int comboBonus;
+        public int _comboBonus;
         public int movementBonus;
+        public int rotundnessBonus; // RotundWorld integration!
         public int comboTimer;
         public int rjumpCounter;
 
@@ -109,7 +112,7 @@ public partial class NoirCatto
         public void ClawHit()
         {
             comboTimer = 40 * 3; //multiplier is number of seconds
-            ComboBonus = comboBonus + 1;
+            ComboBonus = _comboBonus + 1;
         }
 
         private void CombatUpdate()
@@ -126,7 +129,14 @@ public partial class NoirCatto
             if (Cat.animation == Player.AnimationIndex.BellySlide || rjumpCounter >= 15) movementBonus = 2;
             else movementBonus = 0;
             
-            //Debug.Log($"ComboBonus: {ComboBonus}");
+            if (RotundWorld)
+            {
+                rotundnessBonus = (int)((Cat.bodyChunks[1].mass - DefaultFirstChunkMass) * 15f);
+            }
+            // Debug.Log($"Noir's rotundness: {Cat.bodyChunks[1].mass}");
+            // Debug.Log($"Rotundness bonus: {(Cat.bodyChunks[1].mass - 0.315f) * 15f}"); //0.315f is default Noir's firstchunk mass
+            // Debug.Log($"Rotundness bonus INT: {rotundnessBonus}");
+            // Debug.Log($"Combo bonus: {ComboBonus}");
         }
         
         public void Update()
@@ -162,6 +172,12 @@ public partial class NoirCatto
                     }
                 }
             }
+            
+            if (RotundWorld)
+            {
+                MeowPitch = 1f - (Cat.bodyChunks[1].mass - DefaultFirstChunkMass) * 0.65f;
+                if (MeowPitch < 0.15f) MeowPitch = 0.15f;
+            }
 
             lastBodyModeInternal = Cat.bodyMode;
             lastAnimationInternal = Cat.animation;
@@ -174,7 +190,7 @@ public partial class NoirCatto
             {
                 if (Input.GetKeyDown(Options.MeowKey.Value))
                 {
-                    Cat.room?.PlaySound(MeowSND, Cat.firstChunk);
+                    Cat.room?.PlaySound(MeowSND, Cat.firstChunk, false, 1f, MeowPitch);
                 }
             }
         }

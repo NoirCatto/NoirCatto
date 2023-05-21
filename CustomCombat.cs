@@ -9,14 +9,6 @@ namespace NoirCatto;
 
 public partial class NoirCatto
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType CatSlash = new AbstractPhysicalObject.AbstractObjectType("CatSlash", true);
-    
-    private void AbstractPhysicalObjectOnRealize(On.AbstractPhysicalObject.orig_Realize orig, AbstractPhysicalObject self)
-    {
-        orig(self);
-        if (self.type == CatSlash) self.realizedObject = new CatSlash(self, self.world, ((AbstractCatSlash)self).Owner);
-    }
-    
     private PhysicalObject PlayerOnPickupCandidate(On.Player.orig_PickupCandidate orig, Player self, float favorspears) //Favor grabbing stunned critters over spears
     {
         if (self.SlugCatClass != NoirName) return orig(self, favorspears);
@@ -327,7 +319,7 @@ public class CatSlash : Weapon
                 {
                     Owner.Stun(30);
                     noirData.SlashCooldown = 50;
-                    room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk);
+                    room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk, false, 1f, noirData.MeowPitch);
                 }
             }
         }
@@ -370,7 +362,7 @@ public class CatSlash : Weapon
         firstChunk.vel = deflectDir * bounceSpeed * 0.5f;
         ChangeMode(Mode.Free);
         noirData.ClawHit();
-        room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk);
+        room?.PlaySound(NoirCatto.MeowFrustratedSND, Owner.firstChunk, false, 1f, noirData.MeowPitch);
     }
 
     public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)

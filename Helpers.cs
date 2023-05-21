@@ -6,9 +6,12 @@ namespace NoirCatto;
 
 public partial class NoirCatto
 {
-    private static readonly SlugcatStats.Name NoirName = new SlugcatStats.Name("NoirCatto", false);
-    private const int YcounterTreshold = 10;
+    public static readonly SlugcatStats.Name NoirName = new SlugcatStats.Name("NoirCatto", false);
     public static readonly bool SetStandingOnUpdate = true;
+    public static bool RotundWorld;
+    public const float DefaultFirstChunkMass = 0.315f;
+    private const int YcounterTreshold = 10;
+    
 
     public static bool IsSmallerThanMe(Creature self, Creature crit)
     {

@@ -29,6 +29,7 @@ namespace NoirCatto;
 public partial class NoirCatto : BaseUnityPlugin
 {
     public static NoirCattoOptions Options;
+    public static SlugBaseCharacter NoirBase;
     public RainWorld RwInstance;
 
     public NoirCatto()
@@ -47,6 +48,7 @@ public partial class NoirCatto : BaseUnityPlugin
     private void OnEnable()
     {
         On.RainWorld.OnModsInit += RainWorldOnOnModsInit;
+        On.RainWorld.PostModsInit += RainWorldOnPostModsInit;
     }
 
     private bool IsInit;
@@ -109,12 +111,35 @@ public partial class NoirCatto : BaseUnityPlugin
             On.Spear.DrawSprites += SpearOnDrawSprites;
 
             On.AbstractPhysicalObject.Realize += AbstractPhysicalObjectOnRealize;
+            //On.AbstractCreature.Realize += AbstractCreatureOnRealize; //soonTM
+            On.Room.AddObject += RoomOnAddObject;
 
             On.RainWorldGame.ShutDownProcess += RainWorldGameOnShutDownProcess;
             On.GameSession.ctor += GameSessionOnctor;
-            
+
             MachineConnector.SetRegisteredOI("NoirCatto.NoirCatto", Options);
             IsInit = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex);
+            throw;
+        }
+    }
+
+    private void RainWorldOnPostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
+    {
+        orig(self);
+        try
+        {
+            if (ModManager.ActiveMods.Any(x => x.id == "willowwisp.bellyplus"))
+            {
+                RotundWorld = true;
+                Logger.LogInfo("Rotund World detected! Noir gonna be chonky...");
+            }
+
+            // NoirBase = SlugBaseCharacter.Get(NoirName);
+            // NoirBase.Features.Set(SlugBase.Features.GameFeatures.WorldState, JsonConverter.ToJson(new List<object>(){ "Saint", "Gourmand", "Red" } ));
         }
         catch (Exception ex)
         {

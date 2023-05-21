@@ -129,7 +129,7 @@ public partial class NoirCatto
                 case 4:
                     if (Cat.abstractCreature.pos.x >= 11)
                     {
-                        Cat.room?.PlaySound(Meow2SND, Cat.firstChunk);
+                        Cat.room?.PlaySound(Meow2SND, Cat.firstChunk, false, 1f, NoirData.MeowPitch);
                         NextPhase();
                     };
                     break;

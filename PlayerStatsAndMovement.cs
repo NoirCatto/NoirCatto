@@ -130,8 +130,8 @@ public partial class NoirCatto
         
         if (self.bodyMode != Player.BodyModeIndex.Crawl) return;
         //Crawl boost
-        self.dynamicRunSpeed[0] = 2.5f * CrawlSpeedFac;
-        self.dynamicRunSpeed[1] = 2.5f * CrawlSpeedFac;
+        self.dynamicRunSpeed[0] *= CrawlSpeedFac;
+        self.dynamicRunSpeed[1] *= CrawlSpeedFac;
     }
     
     private void PlayerILUpdateBodyMode(ILContext il) //Obsolete, using normal hook instead
@@ -182,8 +182,10 @@ public partial class NoirCatto
         if (noirData.CanCrawlOnBeam())
         {
             //Boost while crawling on horizontal pole
-            self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
-            self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+            // self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+            // self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+            self.dynamicRunSpeed[0] = (self.dynamicRunSpeed[0] + 0.82f) * CrawlSpeedFac; //hardcoded for now, will definitely use runspeedfac here later, mhm
+            self.dynamicRunSpeed[1] = (self.dynamicRunSpeed[0] + 0.82f) * CrawlSpeedFac;
         }
     }
     
