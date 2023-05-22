@@ -187,6 +187,12 @@ public partial class NoirCatto
             var triMesh = new TriangleMesh("Futile_White", earArray, false, false);
             
             sleaser.sprites[EarSpr2] = triMesh;
+            
+            if (Options.HideEars.Value) //For.. DMS?
+            {
+                sleaser.sprites[EarSpr].isVisible = false;
+                sleaser.sprites[EarSpr2].isVisible = false;
+            }
 
             ReplaceSprites(sleaser);
 
@@ -272,7 +278,6 @@ public partial class NoirCatto
             for (var index = 0; index < noirData.Ear.Length; ++index)
             {
                 var earMesh = (TriangleMesh)sleaser.sprites[EarSpr];
-                
                 var earPos = Vector2.Lerp(noirData.Ear[index].lastPos, noirData.Ear[index].pos, timestacker);
                 var normalized = (earPos - earAttachPos).normalized;
                 var vector2_3 = Custom.PerpendicularVector(normalized);
@@ -291,13 +296,13 @@ public partial class NoirCatto
                 earAttachPos = earPos;
             }
 
-            var ear2Mesh = (TriangleMesh)sleaser.sprites[EarSpr2];
+            
             var ear2AttachPos = Ear2AttachPos(noirData, timestacker);
             var ear2Rad = noirData.Ear2[0].rad;
             for (var index = 0; index < noirData.Ear2.Length; ++index)
             {
                 
-                
+                var ear2Mesh = (TriangleMesh)sleaser.sprites[EarSpr2];
                 var ear2Pos = Vector2.Lerp(noirData.Ear2[index].lastPos, noirData.Ear2[index].pos, timestacker);
                 var normalized = (ear2Pos - ear2AttachPos).normalized;
                 var vector2_3 = Custom.PerpendicularVector(normalized);

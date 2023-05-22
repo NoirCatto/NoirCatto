@@ -7,7 +7,14 @@ namespace NoirCatto;
 public partial class NoirCatto
 {
     public static readonly SlugcatStats.Name NoirName = new SlugcatStats.Name("NoirCatto", false);
-    public static readonly SlugcatStats.Name GourmandName = new SlugcatStats.Name("Gourmand", false); // this is set by MSC after the OptionInterface is already initialized
+    //These names are set by MSC after the OptionInterface is already initialized, so OI will nullref if I try to use MSC values...
+    public static readonly SlugcatStats.Name GourmandName = new SlugcatStats.Name("Gourmand", false);
+    public static readonly SlugcatStats.Name RivuletName = new SlugcatStats.Name("Rivulet", false);
+    public static readonly SlugcatStats.Name ArtificerName = new SlugcatStats.Name("Artificer", false);
+    public static readonly SlugcatStats.Name SpearName = new SlugcatStats.Name("Spearmaster", false);
+    public static readonly SlugcatStats.Name SaintName = new SlugcatStats.Name("Saint", false);
+    public static readonly SlugcatStats.Name InvName = new SlugcatStats.Name("Inv", false);
+    public static readonly SlugcatStats.Name[] MSCNames = new[] { GourmandName, RivuletName, ArtificerName, SpearName, SaintName, InvName };
     public static readonly bool SetStandingOnUpdate = true;
     public static bool RotundWorld;
     public const float DefaultFirstChunkMass = 0.315f;

@@ -27,7 +27,6 @@ namespace NoirCatto;
 
 [BepInPlugin("NoirCatto.NoirCatto", "NoirCatto", "1.0.0")]
 [BepInDependency("slime-cubed.slugbase")]
-//todo try using soft dependency for MSC?
 public partial class NoirCatto : BaseUnityPlugin
 {
     public static NoirCattoOptions Options;

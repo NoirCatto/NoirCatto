@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MoreSlugcats;
+using Noise;
 using RWCustom;
 using UnityEngine;
 
@@ -191,6 +192,7 @@ public partial class NoirCatto
                 if (Input.GetKeyDown(Options.MeowKey.Value))
                 {
                     Cat.room?.PlaySound(MeowSND, Cat.firstChunk, false, 1f, MeowPitch);
+                    if (Options.AttractiveMeow.Value) Cat.room?.InGameNoise(new InGameNoise(Cat.firstChunk.pos, 300f, Cat, 1f));
                 }
             }
         }
