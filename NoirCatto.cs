@@ -26,6 +26,8 @@ using Debug = UnityEngine.Debug;
 namespace NoirCatto;
 
 [BepInPlugin("NoirCatto.NoirCatto", "NoirCatto", "1.0.0")]
+[BepInDependency("slime-cubed.slugbase")]
+//todo try using soft dependency for MSC?
 public partial class NoirCatto : BaseUnityPlugin
 {
     public static NoirCattoOptions Options;
@@ -127,6 +129,7 @@ public partial class NoirCatto : BaseUnityPlugin
         }
     }
 
+    private bool IsPostInit;
     private void RainWorldOnPostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
     {
         orig(self);
@@ -137,9 +140,17 @@ public partial class NoirCatto : BaseUnityPlugin
                 RotundWorld = true;
                 Logger.LogInfo("Rotund World detected! Noir gonna be chonky...");
             }
+            else
+            {
+                RotundWorld = false;
+            }
+            
+            if (!IsPostInit)
+            {
+                NoirBase = SlugBaseCharacter.Get(NoirName);
+            }
 
-            // NoirBase = SlugBaseCharacter.Get(NoirName);
-            // NoirBase.Features.Set(SlugBase.Features.GameFeatures.WorldState, JsonConverter.ToJson(new List<object>(){ "Saint", "Gourmand", "Red" } ));
+            IsPostInit = true;
         }
         catch (Exception ex)
         {

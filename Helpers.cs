@@ -7,6 +7,7 @@ namespace NoirCatto;
 public partial class NoirCatto
 {
     public static readonly SlugcatStats.Name NoirName = new SlugcatStats.Name("NoirCatto", false);
+    public static readonly SlugcatStats.Name GourmandName = new SlugcatStats.Name("Gourmand", false); // this is set by MSC after the OptionInterface is already initialized
     public static readonly bool SetStandingOnUpdate = true;
     public static bool RotundWorld;
     public const float DefaultFirstChunkMass = 0.315f;

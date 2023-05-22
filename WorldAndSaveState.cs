@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using RWCustom;
+using SlugBase;
 using UnityEngine;
 
 namespace NoirCatto;
@@ -27,6 +29,9 @@ public partial class NoirCatto
         // var scug = SlugBase.SlugBaseCharacter.Get(NoirName);
         // Dictionary<Feature, object> featurez = (Dictionary<Feature, object>)typeof(SlugBaseCharacter.FeatureList).GetField("_features", (BindingFlags.Instance | BindingFlags.NonPublic)).GetValue(scug.Features);
         // featurez[SlugBase.Features.GameFeatures.WorldState] = new SlugcatStats.Name[] { MoreSlugcatsEnums.SlugcatStatsName.Saint };
+
+        NoirBase.Features.Set(SlugBase.Features.GameFeatures.WorldState, JsonConverter.ToJson(new List<object>(){ Options.WorldState.Value.ToString(), "Gourmand", "Red" } ));
+        
         orig(self, manager);
             
         if (!self.IsStorySession) return;

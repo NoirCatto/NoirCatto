@@ -175,17 +175,25 @@ public partial class NoirCatto
     {
         orig(self);
         if (self.SlugCatClass != NoirName) return;
-        if (self.animation != Player.AnimationIndex.StandOnBeam) return;
 
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
-        
-        if (noirData.CanCrawlOnBeam())
+
+        if (self.animation == Player.AnimationIndex.StandOnBeam)
         {
-            //Boost while crawling on horizontal pole
-            // self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
-            // self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
-            self.dynamicRunSpeed[0] = (self.dynamicRunSpeed[0] + 0.82f) * CrawlSpeedFac; //hardcoded for now, will definitely use runspeedfac here later, mhm
-            self.dynamicRunSpeed[1] = (self.dynamicRunSpeed[0] + 0.82f) * CrawlSpeedFac;
+            if (noirData.CanCrawlOnBeam())
+            {
+                //Boost while crawling on horizontal pole
+                // self.dynamicRunSpeed[0] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+                // self.dynamicRunSpeed[1] = (2.1f + self.slugcatStats.runspeedFac * 0.5f) * CrawlSpeedFac;
+                self.dynamicRunSpeed[0] = (self.dynamicRunSpeed[0] + 0.82f) * CrawlSpeedFac; //hardcoded for now, will definitely use runspeedfac here later, mhm
+                self.dynamicRunSpeed[1] = (self.dynamicRunSpeed[1] + 0.82f) * CrawlSpeedFac;
+            }
+        }
+
+        if (self.animation == Player.AnimationIndex.CrawlTurn)
+        {
+            self.dynamicRunSpeed[0] /= 0.75f; // Game multiplies it by 0.75f
+            self.dynamicRunSpeed[1] /= 0.75f;
         }
     }
     
@@ -409,10 +417,14 @@ public partial class NoirCatto
             throw;
         }
     }
-    
+
+    private bool IsStuckOrWedged(Player player)
+    {
+        return patch_Player.IsStuckOrWedged(player);
+    }
     private void PlayerOnJump(On.Player.orig_Jump orig, Player self)
     {
-        if (self.SlugCatClass != NoirName)
+        if (self.SlugCatClass != NoirName || RotundWorld && IsStuckOrWedged(self))
         {
             orig(self);
             return;

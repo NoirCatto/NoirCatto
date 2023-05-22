@@ -253,7 +253,20 @@ public class CatSlash : Weapon
         base.Update(eu);
         var posAdjustment = Owner.firstChunk.pos - Owner.firstChunk.lastPos;
         firstChunk.pos = Vector2.Lerp(firstChunk.pos, firstChunk.pos + posAdjustment, 1f);
-
+        
+        // Move the paw with the slash
+        if (TraveledAngle < 180f)
+        {
+            var noirGraphics = (PlayerGraphics)Owner.graphicsModule;
+            var hand = Owner.flipDirection == -1 ? 0 : 1;
+            if (Owner.grasps[hand] != null) hand = hand == 0 ? 1 : 0;
+            noirGraphics.hands[hand].mode = Limb.Mode.HuntAbsolutePosition;
+            noirGraphics.hands[hand].huntSpeed = 1000f;
+            noirGraphics.hands[hand].quickness = 100f;
+            noirGraphics.hands[hand].reachingForObject = true;
+            noirGraphics.hands[hand].absoluteHuntPos = this.firstChunk.pos;
+        }
+        
         soundLoop.sound = SoundID.None;
     }
 
@@ -416,7 +429,17 @@ public class CatSlash : Weapon
         sLeaser.sprites[0] = triangleMesh;
         AddToContainer(sLeaser, rCam, null);
     }
-    
+
+    public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
+    {
+        newContatiner ??= rCam.ReturnFContainer("Background"); //Render behind player
+        for (var i = sLeaser.sprites.Length - 1; i >= 0; --i)
+        {
+            sLeaser.sprites[i].RemoveFromContainer();
+            newContatiner.AddChild(sLeaser.sprites[i]);
+        }
+    }
+
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         sLeaser.sprites[1].isVisible = false; //Debug flag
