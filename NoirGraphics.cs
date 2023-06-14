@@ -46,7 +46,7 @@ public partial class NoirCatto
     private const int LegsSpr = 4;
     private const int TailSpr = 2;
     
-    private const int TailLength = 6;
+    private const int TailLength = 7;
     private readonly Color NoirWhite = new Color(0.695f, 0.695f, 0.695f);
     #endregion
 
@@ -116,14 +116,19 @@ public partial class NoirCatto
         noirData.Ear2[1] = new TailSegment(self, 1.5f, 7f, noirData.Ear2[0], 0.85f, 1f, 0.5f, true);
         
         #region Tail
-        var tailThickness = 1f;
-        var tailRoundness = 0.25f;
+        var tailThickness = 2.50f;
+        var tailRoundness = 0.05f;
         self.tail = new TailSegment[TailLength];
         for (var i = 0; i < self.tail.Length; i++)
         {
-            self.tail[i] = new TailSegment(self, Mathf.Lerp(6f, 1f, Mathf.Pow((i + 1) / (float)TailLength, tailThickness)) * (1f + Mathf.Sin(i / (float)TailLength * 3.1415927f) * tailRoundness) *
-                                            1.25f /*BodyThickness*/, ((i == 0) ? 4 : 7) * (self.player.playerState.isPup ? 0.5f : 1f),
-                (i > 0) ? self.tail[i - 1] : null, 0.85f, 1f, (i == 0) ? 1f : 0.5f, true);
+            self.tail[i] = new TailSegment(self, 
+                Mathf.Lerp(6f, 1f, Mathf.Pow((i + 1) / (float)TailLength, tailThickness)) * (1f + Mathf.Sin(i / (float)TailLength * 3.1415927f) * tailRoundness) * 1.25f /*BodyThickness*/, 
+                ((i == 0) ? 4 : 7) * (self.player.playerState.isPup ? 0.5f : 1f),
+                (i > 0) ? self.tail[i - 1] : null, 
+                0.85f, 
+                1f, 
+                (i == 0) ? 1f : 0.5f, 
+                true);
         }
 
         var origBodyParts = self.bodyParts.Where(x => x is not TailSegment).ToList();
