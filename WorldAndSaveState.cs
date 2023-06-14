@@ -63,10 +63,7 @@ public partial class NoirCatto
         var result = orig(self);
         if (!ModManager.MSC) return result;
         if (self.room.game.session is not StoryGameSession session) return result;
-        if (session.saveStateNumber != NoirName) return result;
-
-        if (session.saveState.deathPersistentSaveData.theMark) result = true;
-        return result;
+        return session.saveStateNumber == NoirName || result;
     }
 
     public class NoirStart : UpdatableAndDeletable
