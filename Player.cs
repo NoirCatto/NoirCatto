@@ -29,6 +29,8 @@ public partial class NoirCatto
         public bool Jumping;
         public bool JumpingFromCrawl;
         public int StandCounter;
+        public int CrawlTurnCounter;
+        public int AfterCrawlTurnCounter;
         public int Ycounter;
         public bool LastJumpFromHorizontalBeam;
         public bool CallingAddToContainerFromOrigInitiateSprites;

@@ -89,7 +89,7 @@ public partial class NoirCatto : BaseUnityPlugin
             On.SlugcatStats.ctor += SlugcatStatsOnctor;
             //IL.Player.UpdateBodyMode += PlayerILUpdateBodyMode;
             On.Player.UpdateBodyMode += PlayerOnUpdateBodyMode;
-            //IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
+            IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
             On.Player.UpdateAnimation += PlayerOnUpdateAnimation;
             On.Player.MovementUpdate += PlayerOnMovementUpdate;
             //IL.Player.MovementUpdate += PlayerILMovementUpdate; //Breaks grabbing vertical poles, using a hacky normal hook instead

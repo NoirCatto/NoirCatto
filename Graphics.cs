@@ -301,14 +301,18 @@ public partial class NoirCatto
         orig(self, sleaser, rcam, timestacker, campos);
         if (self.player.SlugCatClass != NoirName) return;
 
-        var headSpr = sleaser.sprites[3];
-        
         if (self.player.bodyMode == Player.BodyModeIndex.Crawl && self.player.animation == Player.AnimationIndex.None)
         {
             if (self.player.input[0].x != 0)
             {
-                headSpr.rotation += -10f * self.player.flipDirection;
+                sleaser.sprites[HeadSpr].rotation += -10f * self.player.flipDirection;
             }
+        }
+
+        if (self.player.animation == Player.AnimationIndex.ClimbOnBeam)
+        {
+            if (sleaser.sprites[LegsSpr].element.name.Contains(Noir))
+                sleaser.sprites[LegsSpr].y -= 6f; //Adjustment for the limited space in leg sprite
         }
     }
     

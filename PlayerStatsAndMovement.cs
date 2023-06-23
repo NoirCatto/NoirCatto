@@ -175,7 +175,6 @@ public partial class NoirCatto
     {
         orig(self);
         if (self.SlugCatClass != NoirName) return;
-
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
 
         if (self.animation == Player.AnimationIndex.StandOnBeam)
@@ -197,76 +196,73 @@ public partial class NoirCatto
         }
     }
     
-    private void PlayerILUpdateAnimation(ILContext il) //Obsolete, using normal hook instead
+    private void PlayerILUpdateAnimation(ILContext il)
     {
         try
         {
             var c = new ILCursor(il);
             ILLabel label = null;
-            c.GotoNext(MoveType.After,
-                i => i.MatchLdarg(0),
-                i => i.MatchCallOrCallvirt<Player>("get_input"),
-                i => i.MatchLdcI4(1),
-                i => i.MatchLdelema<Player.InputPackage>(),
-                i => i.MatchLdfld<Player.InputPackage>("y"),
-                i => i.MatchBrtrue(out _),
-                i => i.MatchLdarg(0),
-                i => i.MatchLdsfld<Player.AnimationIndex>("None"),
-                i => i.MatchStfld<Player>("animation"),
-                i => i.MatchBr(out _),
-                i => i.MatchLdarg(0),
-                i => i.MatchLdsfld<Player.AnimationIndex>("None"),
-                i => i.MatchStfld<Player>("animation"),
-                i => i.MatchLdarg(0),
-                i => i.MatchCallOrCallvirt<Player>("get_input"),
-                i => i.MatchLdcI4(0),
-                i => i.MatchLdelema<Player.InputPackage>(),
-                i => i.MatchLdfld<Player.InputPackage>("x"),
-                i => i.MatchBrfalse(out _)
+            c.GotoNext(
+                i => i.MatchLdsfld<Player.AnimationIndex>("CrawlTurn"),
+                i => i.MatchCall(out _),
+                i => i.MatchBrfalse(out label)
             );
-            c.GotoPrev(MoveType.After, i => i.MatchLdarg(0));
-            
-            c.EmitDelegate((Player self) =>
-            {
-                if (self.SlugCatClass == NoirName && NoirDeets.GetValue(self, NoirDataCtor).CanCrawlOnBeam())
-                {
-                    //Boost while crawling on horizontal pole
-                    self.dynamicRunSpeed[0] = (2.1f + 0.4f) * CrawlSpeedFac + 0f;
-                    self.dynamicRunSpeed[1] = (2.1f + 0.4f) * CrawlSpeedFac + 0f;
-                }
-            });
+            c.GotoPrev(MoveType.Before, i => i.MatchLdarg(0));
             c.Emit(OpCodes.Ldarg_0);
-
-            
-            //Scug don't hang down from poles #1
-            c.GotoNext(MoveType.After,
-                i => i.MatchLdarg(0),
-                i => i.MatchCallOrCallvirt<Player>("get_input"),
-                i => i.MatchLdcI4(0),
-                i => i.MatchLdelema<Player.InputPackage>(),
-                i => i.MatchLdfld<Player.InputPackage>("y"),
-                i => i.MatchLdcI4(1),
-                i => i.MatchBneUn(out label)
-            );
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate((Player self) =>
-            {
-                if (self.SlugCatClass == NoirName)
-                {
-                    return true;
-                }
-                return false;
-            });
-
+            c.EmitDelegate(CustomCrawlTurn);
             c.Emit(OpCodes.Brtrue, label);
-
         }
         catch (Exception ex)
         {
             Logger.LogError(ex);
             throw;
         }
+    }
+    public bool CustomCrawlTurn(Player self)
+    {
+        if (self.SlugCatClass != NoirName) return false;
+        if (self.animation != Player.AnimationIndex.CrawlTurn) return false;
+        var noirData = NoirDeets.GetValue(self, NoirDataCtor);
 
+        //If we're jumping, don't proceed with other code, it breaks the jump
+        if (self.input[0].jmp)
+        {
+            //Also reset the anims so they don't break, too
+            self.bodyMode = Player.BodyModeIndex.Default;
+            self.animation = Player.AnimationIndex.None;
+            return true;
+        }
+        
+        //If our input does not match the facing direction of the slug
+        if (self.input[0].x != 0 && (self.input[0].x > 0) == (self.bodyChunks[0].pos.x < self.bodyChunks[1].pos.x))
+        {
+            //Debug.Log($"CAT NOT FACING CORRECT DIRECTION");
+            noirData.CrawlTurnCounter++;
+            noirData.AfterCrawlTurnCounter = 0;
+            
+            //Temporarily turning off player's bodychunk push/pull
+            self.bodyChunkConnections[0].active = false;
+            
+            var mod = 0.5f;
+            //The back legs drag behind, initiating the turn
+            self.bodyChunks[1].vel.x -= noirData.CrawlTurnCounter * mod * self.flipDirection;
+
+            return true;
+        }
+        
+        if (self.input[0].x != 0)
+        {
+            noirData.AfterCrawlTurnCounter++;
+        }
+        
+        if (noirData.AfterCrawlTurnCounter >= 3 || Custom.Dist(self.bodyChunks[0].pos, self.bodyChunks[1].pos) > 15f)
+        {
+            //Letting orig run after this
+            //Debug.Log($"Resetting cat's anim...");
+            self.bodyChunkConnections[0].active = true;
+            return false;
+        }
+        return true;
     }
     
     private void PlayerOnMovementUpdate(On.Player.orig_MovementUpdate orig, Player self, bool eu)
@@ -369,6 +365,19 @@ public partial class NoirCatto
         }
         #endregion
         
+        #region CrawlTurn
+        if (self.animation != Player.AnimationIndex.CrawlTurn)
+        {
+            noirData.CrawlTurnCounter = 0;
+            noirData.AfterCrawlTurnCounter = 0;
+        }
+        
+        if (noirData.LastAnimation == Player.AnimationIndex.CrawlTurn && self.animation != Player.AnimationIndex.CrawlTurn)
+        {
+            self.bodyChunkConnections[0].active = true; //Just to make sure we're not left in an unhinged state
+        }
+        #endregion
+        
         CustomCombatUpdate(self, eu);
         noirData.LastAnimation = self.animation;
         noirData.LastBodyMode = self.bodyMode;
@@ -434,7 +443,8 @@ public partial class NoirCatto
         
         noirData.LastJumpFromHorizontalBeam = false;
 
-        if (self.bodyMode == Player.BodyModeIndex.Crawl && self.animation == Player.AnimationIndex.None &&
+        if (self.bodyMode == Player.BodyModeIndex.Crawl && 
+            (self.animation == Player.AnimationIndex.None || self.animation == Player.AnimationIndex.CrawlTurn) &&
             self.input[0].x != 0 && self.superLaunchJump < 20)
         {
             //Jump() constants
@@ -444,12 +454,11 @@ public partial class NoirCatto
             
             //Modifier constants
             const float xMod = 1f;
-            const float yMod = 8.5f;
+            const float yMod = 9f;
             const float xModPos = 5f;
             const float yModPos = 5f;
             
             //self.simulateHoldJumpButton = 6;
-            //self.jumpBoost = 6f;
             self.bodyChunks[1].pos += new Vector2(xModPos * self.flipDirection, yModPos);
             self.bodyChunks[0].pos = self.bodyChunks[1].pos + new Vector2(xModPos * self.flipDirection, yModPos);
             self.bodyChunks[1].vel += new Vector2(self.flipDirection * xMod, yMod) * num1;
@@ -468,10 +477,8 @@ public partial class NoirCatto
             //     self.bodyChunks[0].vel.x += (float) self.bodyChunks[1].onSlope * 1.8f * num1;
             //     self.bodyChunks[1].vel.x += (float) self.bodyChunks[1].onSlope * 1.2f * num1;
             // }
-
             
             //self.standing = false;
-            //self.jumpBoost = 8f;
             noirData.Jumping = true;
             noirData.JumpingFromCrawl = true;
             return;
