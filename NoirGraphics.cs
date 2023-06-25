@@ -17,6 +17,8 @@ public partial class NoirCatto
         Futile.atlasManager.LoadAtlas("atlases/NoirEars");
         Futile.atlasManager.LoadAtlas("atlases/NoirBodyA");
         Futile.atlasManager.LoadAtlas("atlases/NoirHipsA");
+        Futile.atlasManager.LoadAtlas("atlases/NoirLeftHipsA");
+        Futile.atlasManager.LoadAtlas("atlases/NoirRightHipsA");
         Futile.atlasManager.LoadAtlas("atlases/NoirLegs");
         Futile.atlasManager.LoadAtlas("atlases/NoirPlayerArm");
         Futile.atlasManager.LoadAtlas("atlases/NoirTail");
@@ -60,8 +62,10 @@ public partial class NoirCatto
     private static int EarSpr;
     private static int EarSpr2;
 
-    private void ReplaceSprites(RoomCamera.SpriteLeaser sleaser)
+    private void ReplaceSprites(RoomCamera.SpriteLeaser sleaser, PlayerGraphics self)
     {
+        var noirData = NoirDeets.GetValue(self.player, NoirDataCtor);
+        
         foreach (var num in SprToReplace)
         {
             var spr = sleaser.sprites[num].element;
@@ -72,32 +76,59 @@ public partial class NoirCatto
                 {
                     continue;
                 }
-
+                
+                if (num == HeadSpr) //Pup Fix
+                {
+                    if (!sleaser.sprites[num].element.name.Contains("HeadA"))
+                    {
+                        sleaser.sprites[num].element.name = spr.name.Replace("HeadB", "HeadA");
+                        sleaser.sprites[num].element.name = spr.name.Replace("HeadC", "HeadA");
+                        sleaser.sprites[num].element.name = spr.name.Replace("HeadD", "HeadA");
+                    }
+                }
+                if (num == FaceSpr) //Pup Fix
+                {
+                    if (sleaser.sprites[num].element.name.Contains("PFace"))
+                    {
+                        sleaser.sprites[num].element.name = spr.name.Replace("PFace", "Face");
+                    }
+                }
+                
                 if (num == TailSpr)
+                {
                     sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(NoirTail);
+                }
                 else
                 {
-                    if (num == HeadSpr) //Pup Fix
-                    {
-                        //Logger.LogInfo($"Head Name: {sleaser.sprites[num].element.name}");
-                        if (!sleaser.sprites[num].element.name.Contains("HeadA"))
-                        {
-                            sleaser.sprites[num].element.name = spr.name.Replace("HeadB", "HeadA");
-                            sleaser.sprites[num].element.name = spr.name.Replace("HeadC", "HeadA");
-                            sleaser.sprites[num].element.name = spr.name.Replace("HeadD", "HeadA");
-                        }
-                        //Logger.LogInfo($"New Head Name: {sleaser.sprites[num].element.name}");
-                    }
-                    else if (num == FaceSpr) //Pup Fix
-                    {
-                        if (sleaser.sprites[num].element.name.Contains("PFace"))
-                        {
-                            sleaser.sprites[num].element.name = spr.name.Replace("PFace", "Face");
-                        }
-                    }
                     sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(Noir + spr.name);
                 }
+            }
+        }
 
+        //It gets a bit messy here
+        if (sleaser.sprites[HipsSpr].element.name.StartsWith(Noir))
+        {
+            if (!self.player.standing && (self.player.animation == Player.AnimationIndex.None || self.player.animation == Player.AnimationIndex.CrawlTurn) ||
+                self.player.animation == Player.AnimationIndex.StandOnBeam && noirData.CanCrawlOnBeam())
+            {
+                var angle = Custom.AimFromOneVectorToAnother(self.player.bodyChunks[0].pos, self.player.bodyChunks[1].pos);
+                
+                if (angle is > 0 and < 120)
+                {
+                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "Left" + "HipsA");
+                }
+                else if (angle is < 0 and > -120)
+                {
+                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "Right" + "HipsA");
+                }
+                else
+                {
+                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "HipsA");
+                }
+            }
+            else
+            {
+                sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "HipsA");
             }
         }
     }
@@ -199,7 +230,7 @@ public partial class NoirCatto
                 sleaser.sprites[EarSpr2].isVisible = false;
             }
 
-            ReplaceSprites(sleaser);
+            ReplaceSprites(sleaser, self);
 
             noirData.CallingAddToContainerFromOrigInitiateSprites = false;
             self.AddToContainer(sleaser, rcam, null);
@@ -244,7 +275,7 @@ public partial class NoirCatto
         {
             var noirData = NoirDeets.GetValue(self.player, NoirDataCtor);
             
-            ReplaceSprites(sleaser);
+            ReplaceSprites(sleaser, self);
             if (sleaser.sprites[FaceSpr].element.name.StartsWith(Noir)) //For DMS compatibility :)
                 sleaser.sprites[FaceSpr].color = Color.white;
             
@@ -346,7 +377,7 @@ public partial class NoirCatto
             }
             
             if ((self.player.animation == Player.AnimationIndex.None && (self.player.input[0].x != 0 && self.player.input[4].x != 0)) || 
-            (self.player.animation == Player.AnimationIndex.StandOnBeam && (self.player.input[0].x != 0 && self.player.input[4].x != 0)) ||
+            //(self.player.animation == Player.AnimationIndex.StandOnBeam && (self.player.input[0].x != 0 && self.player.input[4].x != 0)) || //Doesn't work well with new sprites
             self.player.bodyMode == Player.BodyModeIndex.Crawl || 
             self.player.animation != Player.AnimationIndex.None && self.player.animation != Player.AnimationIndex.Flip && !noirData.OnAnyBeam())
             {
