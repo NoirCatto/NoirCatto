@@ -128,10 +128,57 @@ public partial class NoirCatto
         if (self.SlugCatClass != NoirName) return;
         //var noirData = NoirDeets.GetValue(self, NoirDataCtor);
         
-        if (self.bodyMode != Player.BodyModeIndex.Crawl) return;
-        //Crawl boost
-        self.dynamicRunSpeed[0] *= CrawlSpeedFac;
-        self.dynamicRunSpeed[1] *= CrawlSpeedFac;
+        if (self.bodyMode == Player.BodyModeIndex.Crawl)
+        {
+            //Crawl boost
+            self.dynamicRunSpeed[0] *= CrawlSpeedFac;
+            self.dynamicRunSpeed[1] *= CrawlSpeedFac;
+            
+            #region slideCounter
+            if (self.slideCounter > 0)
+            {
+                self.slideCounter++;
+                if (self.slideCounter > 20 || self.input[0].x != -self.slideDirection)
+                {
+                    self.slideCounter = 0;
+                }
+                var num = -Mathf.Sin(self.slideCounter / 20f * 3.1415927f * 0.5f) + 0.5f;
+                var mainBodyChunk2 = self.mainBodyChunk;
+                mainBodyChunk2.vel.x = mainBodyChunk2.vel.x + (num * 3.5f * self.slideDirection - self.slideDirection * ((num < 0f) ? 0.8f : 0.5f) * (self.isSlugpup ? 0.25f : 1f));
+                var bodyChunk21 = self.bodyChunks[1];
+                bodyChunk21.vel.x = bodyChunk21.vel.x + (num * 3.5f * self.slideDirection + self.slideDirection * 0.5f);
+                if ((self.slideCounter == 4 || self.slideCounter == 7 || self.slideCounter == 11) && Random.value < Mathf.InverseLerp(0f, 0.5f, self.room.roomSettings.CeilingDrips))
+                {
+                    self.room.AddObject(new WaterDrip(self.bodyChunks[1].pos + new Vector2(0f, -self.bodyChunks[1].rad + 1f), Custom.DegToVec(self.slideDirection * Mathf.Lerp(30f, 70f, Random.value)) * Mathf.Lerp(6f, 11f, Random.value), false));
+                }
+            }
+            else if (self.input[0].x != 0)
+            {
+                if (self.input[0].x != self.slideDirection)
+                {
+                    if (self.initSlideCounter > 10 && self.mainBodyChunk.vel.x > 0f == self.slideDirection > 0 && Mathf.Abs(self.mainBodyChunk.vel.x) > 1f)
+                    {
+                        self.slideCounter = 1;
+                        self.room.PlaySound(SoundID.Slugcat_Skid_On_Ground_Init, self.mainBodyChunk, false, 1f, 0.9f);
+                    }
+                    else
+                    {
+                        self.slideDirection = self.input[0].x;
+                    }
+                    self.initSlideCounter = 0;
+                    return;
+                }
+                if (self.initSlideCounter < 30)
+                {
+                    self.initSlideCounter++;
+                }
+            }
+            else if (self.initSlideCounter > 0)
+            {
+                self.initSlideCounter--;
+            }
+        }
+        #endregion
     }
     
     private void PlayerILUpdateBodyMode(ILContext il) //Obsolete, using normal hook instead
@@ -442,8 +489,12 @@ public partial class NoirCatto
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
         
         noirData.LastJumpFromHorizontalBeam = false;
+        
 
-        if (self.bodyMode == Player.BodyModeIndex.Crawl && 
+        var flip = !self.standing && self.slideCounter > 0 && self.slideCounter < 10;
+
+        if ((!self.standing && self.bodyChunks[1].contactPoint.y == 0 && self.animation != Player.AnimationIndex.Roll) || //The run thingy fix
+            self.bodyMode == Player.BodyModeIndex.Crawl && 
             (self.animation == Player.AnimationIndex.None || self.animation == Player.AnimationIndex.CrawlTurn) &&
             self.input[0].x != 0 && self.superLaunchJump < 20)
         {
@@ -454,7 +505,7 @@ public partial class NoirCatto
             
             //Modifier constants
             const float xMod = 1f;
-            const float yMod = 9f;
+            var yMod = flip ? 10.5f : 9f;
             const float xModPos = 5f;
             const float yModPos = 5f;
             
@@ -463,7 +514,14 @@ public partial class NoirCatto
             self.bodyChunks[0].pos = self.bodyChunks[1].pos + new Vector2(xModPos * self.flipDirection, yModPos);
             self.bodyChunks[1].vel += new Vector2(self.flipDirection * xMod, yMod) * num1;
             self.bodyChunks[0].vel += new Vector2(self.flipDirection * xMod, yMod) * num1;
-            self.room.PlaySound(SoundID.Slugcat_Normal_Jump, self.mainBodyChunk, false, 1f, 1f);
+            
+            if (flip)
+            {
+                self.flipFromSlide = true;
+                self.animation = Player.AnimationIndex.Flip;
+                self.slideCounter = 0;
+            }
+            self.room.PlaySound(flip ? SoundID.Slugcat_Flip_Jump : SoundID.Slugcat_Normal_Jump, self.mainBodyChunk, false, 1f, 1f);
             
             //--
             // if (self.bodyChunks[1].onSlope == 0)
