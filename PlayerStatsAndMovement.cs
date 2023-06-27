@@ -324,7 +324,18 @@ public partial class NoirCatto
 
         var graphics = (PlayerGraphics)self.graphicsModule;
         
-        #region Stand on beam if dropping from above
+        #region Leap changes
+        if (!self.standing && self.superLaunchJump >= 20)
+        {
+            if (self.input[0].y > 0)
+            {
+                self.input[0].y = 0;
+                self.input[0].x = 0;
+            }
+        }
+        #endregion
+        
+        #region Stand on beam if dropping from above (ORIG is here)
         //Slugcat will attempt snapping on top of a horizontal beam if dropping from above
         //This is a very rough prototype and could use some ironing out, but works good enough for now
         var anyPartOnVertBeam = (self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[0].pos)).verticalBeam || self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[1].pos)).verticalBeam ||
@@ -491,18 +502,19 @@ public partial class NoirCatto
         noirData.LastJumpFromHorizontalBeam = false;
         
 
+        //Jump() constants
+        var num1 = Mathf.Lerp(1f, 1.15f, self.Adrenaline);
+        if (self.grasps[0] != null && self.HeavyCarry(self.grasps[0].grabbed) && !(self.grasps[0].grabbed is Cicada))
+            num1 += Mathf.Min(Mathf.Max(0.0f, self.grasps[0].grabbed.TotalMass - 0.2f) * 1.5f, 1.3f);
+        
         var flip = !self.standing && self.slideCounter > 0 && self.slideCounter < 10;
+        var longJump = self.superLaunchJump;
 
         if ((!self.standing && self.bodyChunks[1].contactPoint.y == 0 && self.animation != Player.AnimationIndex.Roll) || //The run thingy fix
             self.bodyMode == Player.BodyModeIndex.Crawl && 
             (self.animation == Player.AnimationIndex.None || self.animation == Player.AnimationIndex.CrawlTurn) &&
-            self.input[0].x != 0 && self.superLaunchJump < 20)
+            self.input[0].x != 0 && longJump < 20)
         {
-            //Jump() constants
-            var num1 = Mathf.Lerp(1f, 1.15f, self.Adrenaline);
-            if (self.grasps[0] != null && self.HeavyCarry(self.grasps[0].grabbed) && !(self.grasps[0].grabbed is Cicada))
-                num1 += Mathf.Min(Mathf.Max(0.0f, self.grasps[0].grabbed.TotalMass - 0.2f) * 1.5f, 1.3f);
-            
             //Modifier constants
             const float xMod = 1f;
             var yMod = flip ? 10.5f : 9f;
@@ -541,13 +553,45 @@ public partial class NoirCatto
             noirData.JumpingFromCrawl = true;
             return;
         }
+        
 
         if (self.animation == Player.AnimationIndex.StandOnBeam)
         {
             noirData.LastJumpFromHorizontalBeam = true;
         }
         
-        orig(self);
+        orig(self); // <-- ORIG here
+
+        
+        //Pounce changes
+        if (!self.standing && self.animation == Player.AnimationIndex.None && longJump >= 20)
+        {
+            if (noirData.UnchangedInput[0].y > 0)
+            {
+                self.bodyChunks[0].vel += new Vector2(0f, 10.0f);
+                self.bodyChunks[1].vel += new Vector2(0f, 4.5f);
+                
+                if (noirData.UnchangedInput[0].x == 0)
+                {
+                    self.bodyChunks[0].vel.x *= 0.25f;
+                    self.bodyChunks[1].vel.x *= 0.25f;
+                }
+                else
+                {
+                    self.bodyChunks[0].vel.x *= 0.75f;
+                    self.bodyChunks[1].vel.x *= 0.75f;
+                }
+            }
+
+            else if (noirData.UnchangedInput[0].x > 0)
+            {
+                var mod = 1.25f;
+                self.bodyChunks[0].vel.x *= mod;
+                self.bodyChunks[0].vel.x *= mod;
+            }
+        }
+        
+
         if (!SetStandingOnUpdate) self.standing = false;
         noirData.Jumping = true;
     }
