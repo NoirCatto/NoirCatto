@@ -242,7 +242,6 @@ public partial class NoirCatto
     private void PlayerOnUpdate(On.Player.orig_Update orig, Player self, bool eu)
     {
         orig(self, eu);
-        self.grasps[0].grabbed.firstChunk.vel.x += 1f;
         if (self.SlugCatClass != NoirName) return;
         NoirDeets.GetValue(self, NoirDataCtor).Update();
     }

@@ -290,9 +290,8 @@ public partial class NoirCatto
             //Temporarily turning off player's bodychunk push/pull
             self.bodyChunkConnections[0].active = false;
             
-            var mod = 0.5f;
             //The back legs drag behind, initiating the turn
-            self.bodyChunks[1].vel.x -= noirData.CrawlTurnCounter * mod * self.flipDirection;
+            self.bodyChunks[1].vel.x -= noirData.CrawlTurnCounter * 0.5f * self.flipDirection;
 
             return true;
         }
