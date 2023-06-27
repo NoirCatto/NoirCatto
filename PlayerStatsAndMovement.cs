@@ -333,6 +333,36 @@ public partial class NoirCatto
                 self.input[0].x = 0;
             }
         }
+        
+        //Pole leap
+        if (!noirData.CanCrawlOnBeam() || !self.input[0].jmp)
+        {
+            if (noirData.SuperCrawlPounce > 0)
+            {
+                noirData.SuperCrawlPounce--;
+            }
+        }
+
+        if (noirData.CanCrawlOnBeam() && self.input[0].x == 0 || (self.input[0].jmp && noirData.SuperCrawlPounce >= 20))
+        {
+            if (self.input[0].jmp)
+            {
+                self.input[0].jmp = false;
+                self.input[0].x = 0;
+                self.input[0].y = 0;
+                noirData.Ycounter = 0;
+                
+                if (noirData.SuperCrawlPounce < 20)
+                {
+                    noirData.SuperCrawlPounce++;
+                }
+            }
+        }
+        
+        if (noirData.CanCrawlOnBeam() && noirData.SuperCrawlPounce >= 19 && !noirData.UnchangedInput[0].jmp && noirData.UnchangedInput[1].jmp)
+        {
+            self.Jump();
+        }
         #endregion
         
         #region Stand on beam if dropping from above (ORIG is here)
@@ -375,7 +405,7 @@ public partial class NoirCatto
         if (self.animation == Player.AnimationIndex.HangFromBeam && noirData.LastAnimation != Player.AnimationIndex.HangFromBeam &&
             noirData.LastAnimation != Player.AnimationIndex.StandOnBeam && 
             self.input[0].y > 0 && self.mainBodyChunk.lastPos.y >= self.mainBodyChunk.pos.y
-            && !flag)
+            && !flag && noirData.CanGrabBeam())
         {
             // Debug.Log($"tile: {self.room.MiddleOfTile(self.bodyChunks[1].pos).y}");
             // Debug.Log($"pos: {self.bodyChunks[1].pos.y}");
@@ -498,17 +528,54 @@ public partial class NoirCatto
         }
         
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
-        
         noirData.LastJumpFromHorizontalBeam = false;
-        
 
         //Jump() constants
         var num1 = Mathf.Lerp(1f, 1.15f, self.Adrenaline);
         if (self.grasps[0] != null && self.HeavyCarry(self.grasps[0].grabbed) && !(self.grasps[0].grabbed is Cicada))
             num1 += Mathf.Min(Mathf.Max(0.0f, self.grasps[0].grabbed.TotalMass - 0.2f) * 1.5f, 1.3f);
-        
+
         var flip = !self.standing && self.slideCounter > 0 && self.slideCounter < 10;
         var longJump = self.superLaunchJump;
+
+        if (self.animation == Player.AnimationIndex.StandOnBeam)
+        {
+            noirData.LastJumpFromHorizontalBeam = true;
+        }
+        
+        #region Pole pounce
+        var forcePounce = false;
+        if (noirData.CanCrawlOnBeam() && noirData.SuperCrawlPounce >= 19) //We're checking one input late, hence why it's 19 not 20
+        {
+            forcePounce = true;
+            noirData.SuperCrawlPounce = 0;
+            
+            var num5 = 9f;
+            var num4 = self.bodyChunks[0].pos.x > self.bodyChunks[1].pos.x ? 1 : -1;
+            self.simulateHoldJumpButton = 6;
+            
+            self.bodyMode = Player.BodyModeIndex.Default;
+            self.animation = Player.AnimationIndex.None;
+            
+            self.bodyChunks[0].pos.y += 6f;
+            
+            if (self.bodyChunks[0].ContactPoint.y == -1)
+            {
+                self.bodyChunks[0].vel.y += 3f * num1;
+            }
+            
+            self.bodyChunks[1].vel.y += 4f * num1;
+            self.jumpBoost = 6f;
+            
+            if ( self.bodyChunks[0].pos.x > self.bodyChunks[1].pos.x == num4 > 0)
+            {
+                self.bodyChunks[0].vel.x += num4 * num5 * num1;
+                self.bodyChunks[1].vel.x +=num4 * num5 * num1;
+                self.room.PlaySound(SoundID.Slugcat_Super_Jump, self.mainBodyChunk, false, 1f, 1f);
+            }
+            goto nope;
+        }
+        #endregion
 
         if ((!self.standing && self.bodyChunks[1].contactPoint.y == 0 && self.animation != Player.AnimationIndex.Roll) || //The run thingy fix
             self.bodyMode == Player.BodyModeIndex.Crawl && 
@@ -553,18 +620,12 @@ public partial class NoirCatto
             noirData.JumpingFromCrawl = true;
             return;
         }
-        
 
-        if (self.animation == Player.AnimationIndex.StandOnBeam)
-        {
-            noirData.LastJumpFromHorizontalBeam = true;
-        }
-        
         orig(self); // <-- ORIG here
-
+        nope:
         
         //Pounce changes
-        if (!self.standing && self.animation == Player.AnimationIndex.None && longJump >= 20)
+        if ((!self.standing && self.animation == Player.AnimationIndex.None && longJump >= 20) || forcePounce)
         {
             if (noirData.UnchangedInput[0].y > 0)
             {

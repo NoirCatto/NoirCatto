@@ -31,6 +31,7 @@ public partial class NoirCatto
         public int StandCounter;
         public int CrawlTurnCounter;
         public int AfterCrawlTurnCounter;
+        public int SuperCrawlPounce;
         public int Ycounter;
         public bool LastJumpFromHorizontalBeam;
         public bool CallingAddToContainerFromOrigInitiateSprites;
@@ -109,7 +110,37 @@ public partial class NoirCatto
         
             //Debug.Log($"BEAM LENGTH - LEFT: {beamLengthL}, RIGHT: {beamLengthR}, TOTAL: {beamLengthL + beamLengthR}");
         
-            return (Cat.animation == Player.AnimationIndex.StandOnBeam && beamLengthL + beamLengthR > 100 && Ycounter < YcounterTreshold);
+            return (Cat.animation == Player.AnimationIndex.StandOnBeam && beamLengthL + beamLengthR > 40 && Ycounter < YcounterTreshold);
+        }
+        
+        public bool CanGrabBeam()
+        {
+            var graphics = (PlayerGraphics)Cat.graphicsModule;
+            if (graphics == null || Cat.room == null) return false;
+
+            Vector2 pos;
+            if (Cat.room.GetTile(Cat.room.GetTilePosition(Cat.bodyChunks[0].pos)).horizontalBeam) pos = Cat.bodyChunks[0].pos;
+            else if (Cat.room.GetTile(Cat.room.GetTilePosition(Cat.bodyChunks[1].pos)).horizontalBeam) pos = Cat.bodyChunks[1].pos;
+            else if (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.hands[0].pos)).horizontalBeam) pos = graphics.hands[0].pos;
+            else if (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.hands[1].pos)).horizontalBeam) pos = graphics.hands[1].pos;
+            else return false;
+            
+            // Debug.Log("Found a beam tile!");
+
+            var beamLengthL = 0;
+            var beamLengthR = 0;
+            while (Cat.room.GetTile(Cat.room.GetTilePosition(pos + new Vector2(beamLengthR, 0f))).horizontalBeam)
+            {
+                beamLengthR++;
+            }
+            while (Cat.room.GetTile(Cat.room.GetTilePosition(pos + new Vector2(-beamLengthL, 0f))).horizontalBeam)
+            {
+                beamLengthL++;
+            }
+        
+            // Debug.Log($"BEAM LENGTH - LEFT: {beamLengthL}, RIGHT: {beamLengthR}, TOTAL: {beamLengthL + beamLengthR}");
+        
+            return beamLengthL + beamLengthR > 40;
         }
         
         public void ClawHit()
@@ -211,6 +242,7 @@ public partial class NoirCatto
     private void PlayerOnUpdate(On.Player.orig_Update orig, Player self, bool eu)
     {
         orig(self, eu);
+        self.grasps[0].grabbed.firstChunk.vel.x += 1f;
         if (self.SlugCatClass != NoirName) return;
         NoirDeets.GetValue(self, NoirDataCtor).Update();
     }
@@ -222,7 +254,12 @@ public partial class NoirCatto
         
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
 
-        self.input.CopyTo(noirData.UnchangedInput, 0);
+        for (var i = noirData.UnchangedInput.Length - 1; i > 0; i--)
+        {
+            noirData.UnchangedInput[i] = noirData.UnchangedInput[i - 1];
+        }
+        noirData.UnchangedInput[0] = self.input[0];
+        
 
         if (noirData.UnchangedInput[0].y > 0)
         {
