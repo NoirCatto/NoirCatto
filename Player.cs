@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MoreSlugcats;
@@ -40,7 +41,21 @@ public partial class NoirCatto
         public bool LastGraspsAnyNull;
         public bool LastFirstGraspNull;
         public float MeowPitch = 1f;
-        
+
+        public int FlipDirection
+        {
+            get
+            {
+                if (Mathf.Abs(Cat.bodyChunks[0].pos.x - Cat.bodyChunks[1].pos.x) < 2f)
+                {
+                    return Cat.flipDirection;
+                }
+                else
+                {
+                    return Cat.bodyChunks[0].pos.x > Cat.bodyChunks[1].pos.x ? 1 : -1;
+                }
+            }
+        }
 
         public int SlashCooldown;
         public int ComboBonus

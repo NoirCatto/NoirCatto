@@ -359,7 +359,7 @@ public partial class NoirCatto
             #endregion
             
             #region Moving Sprites to front/back
-            if (self.player.flipDirection == 1)
+            if (noirData.FlipDirection == 1)
             {
                 sleaser.sprites[ArmSpr].MoveBehindOtherNode(sleaser.sprites[HeadSpr]);
                 sleaser.sprites[ArmSpr2].MoveBehindOtherNode(sleaser.sprites[BodySpr]);

@@ -177,8 +177,8 @@ public partial class NoirCatto
             {
                 self.initSlideCounter--;
             }
+            #endregion
         }
-        #endregion
     }
     
     private void PlayerILUpdateBodyMode(ILContext il) //Obsolete, using normal hook instead
@@ -536,6 +536,7 @@ public partial class NoirCatto
 
         var flip = !self.standing && self.slideCounter > 0 && self.slideCounter < 10;
         var longJump = self.superLaunchJump;
+        var ymod = noirData.UnchangedInput[0].y >= 0 ? 1 : -1; 
 
         if (self.animation == Player.AnimationIndex.StandOnBeam)
         {
@@ -552,18 +553,18 @@ public partial class NoirCatto
             var num5 = 9f;
             var num4 = self.bodyChunks[0].pos.x > self.bodyChunks[1].pos.x ? 1 : -1;
             self.simulateHoldJumpButton = 6;
-            
+
             self.bodyMode = Player.BodyModeIndex.Default;
             self.animation = Player.AnimationIndex.None;
             
-            self.bodyChunks[0].pos.y += 6f;
+            self.bodyChunks[0].pos.y += 6f * ymod;
             
             if (self.bodyChunks[0].ContactPoint.y == -1)
             {
-                self.bodyChunks[0].vel.y += 3f * num1;
+                self.bodyChunks[0].vel.y += 3f * num1 * ymod;
             }
             
-            self.bodyChunks[1].vel.y += 4f * num1;
+            self.bodyChunks[1].vel.y += 4f * num1 * ymod;
             self.jumpBoost = 6f;
             
             if ( self.bodyChunks[0].pos.x > self.bodyChunks[1].pos.x == num4 > 0)
@@ -640,6 +641,22 @@ public partial class NoirCatto
                 {
                     self.bodyChunks[0].vel.x *= 0.75f;
                     self.bodyChunks[1].vel.x *= 0.75f;
+                }
+            }
+            else if (noirData.UnchangedInput[0].y < 0 && forcePounce)
+            {
+                self.bodyChunks[0].vel += new Vector2(0f, -10.0f);
+                self.bodyChunks[1].vel += new Vector2(0f, -4.5f);
+                
+                if (noirData.UnchangedInput[0].x == 0)
+                {
+                    self.bodyChunks[0].vel.x *= 0.25f;
+                    self.bodyChunks[1].vel.x *= 0.25f;
+                }
+                else
+                {
+                    self.bodyChunks[0].vel.x *= 1f;
+                    self.bodyChunks[1].vel.x *= 1f;
                 }
             }
 

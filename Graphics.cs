@@ -43,8 +43,14 @@ public partial class NoirCatto
                 self.head.pos.x = Mathf.Lerp(self.head.lastPos.x + 1 * flpDirNeg, self.head.pos.x + 1 * flpDirNeg, 1f);
             }
             
-            //Forcing bodychunks to rotate so the player is aligned horizontally
+            //Damping
+            if (self.player.input[0].x == 0)
+            {
+                //The last number is the modifier - the bigger the number, the less floppage
+                self.player.bodyChunks[0].vel = Vector2.Lerp(self.player.bodyChunks[0].vel, Vector2.zero, self.player.bodyChunks[0].vel.magnitude * self.player.bodyChunks[0].vel.magnitude * 0.006f);
+            }
             
+            //Forcing bodychunks to rotate so the player is aligned horizontally
             switch (angle)
             {
                 case > 0 and < 90: //Left Down->Middle
@@ -223,10 +229,10 @@ public partial class NoirCatto
 
         if ((self.player.animation == Player.AnimationIndex.None && self.player.input[0].x != 0) || 
             (self.player.animation == Player.AnimationIndex.StandOnBeam && self.player.input[0].x != 0) ||
-            self.player.bodyMode == Player.BodyModeIndex.Crawl || 
+            self.player.bodyMode == Player.BodyModeIndex.Crawl || noirData.CanCrawlOnBeam() ||
             self.player.animation != Player.AnimationIndex.None && self.player.animation != Player.AnimationIndex.Flip && !noirData.OnAnyBeam())
         {
-            if (self.player.flipDirection == 1)
+            if (noirData.FlipDirection == 1)
             {
                 noirData.EarFlip = 1;
                 noirData.Ear2Flip = -1;
@@ -237,36 +243,51 @@ public partial class NoirCatto
                 noirData.Ear2Flip = 1;
             }
 
-            if (self.player.bodyMode == Player.BodyModeIndex.Crawl && self.player.input[0].x == 0)
+            if ((self.player.bodyMode == Player.BodyModeIndex.Crawl || noirData.CanCrawlOnBeam()) && self.player.input[0].x == 0)
             {
-                if (self.player.flipDirection == 1)
+                var noirFlpDirNeg = noirData.FlipDirection * -1;
+                if (noirData.FlipDirection == 1)
                 {
-                    noirData.Ear[0].vel.x += 0.45f * flpDirNeg;
-                    noirData.Ear[1].vel.x += 0.45f * flpDirNeg;
-                    noirData.Ear2[0].vel.x += 0.35f * flpDirNeg;
-                    noirData.Ear2[1].vel.x += 0.35f * flpDirNeg;
+                    noirData.Ear[0].vel.x += 0.45f * noirFlpDirNeg;
+                    noirData.Ear[1].vel.x += 0.45f * noirFlpDirNeg;
+                    noirData.Ear2[0].vel.x += 0.35f * noirFlpDirNeg;
+                    noirData.Ear2[1].vel.x += 0.35f * noirFlpDirNeg;
 
-                    if (self.player.superLaunchJump >= 20)
+                    if (self.player.superLaunchJump >= 20 || noirData.SuperCrawlPounce >= 20)
                     {
-                        noirData.Ear[0].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear[1].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear2[0].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear2[1].vel.x += 0.5f * flpDirNeg;
+                        noirData.Ear[0].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear[1].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear2[0].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear2[1].vel.x += 0.5f * noirFlpDirNeg;
+                    }
+                    if (noirData.SuperCrawlPounce >= 20)
+                    {
+                        noirData.Ear[0].vel.y -= 0.35f;
+                        noirData.Ear[1].vel.y -= 0.35f;
+                        noirData.Ear2[0].vel.y -= 0.35f;
+                        noirData.Ear2[1].vel.y -= 0.35f;
                     }
                 }
                 else
                 {
-                    noirData.Ear[0].vel.x += 0.35f * flpDirNeg;
-                    noirData.Ear[1].vel.x += 0.35f * flpDirNeg;
-                    noirData.Ear2[0].vel.x += 0.45f * flpDirNeg;
-                    noirData.Ear2[1].vel.x += 0.45f * flpDirNeg;
+                    noirData.Ear[0].vel.x += 0.35f * noirFlpDirNeg;
+                    noirData.Ear[1].vel.x += 0.35f * noirFlpDirNeg;
+                    noirData.Ear2[0].vel.x += 0.45f * noirFlpDirNeg;
+                    noirData.Ear2[1].vel.x += 0.45f * noirFlpDirNeg;
 
-                    if (self.player.superLaunchJump >= 20)
+                    if (self.player.superLaunchJump >= 20 || noirData.SuperCrawlPounce >= 20)
                     {
-                        noirData.Ear[0].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear[1].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear2[0].vel.x += 0.5f * flpDirNeg;
-                        noirData.Ear2[1].vel.x += 0.5f * flpDirNeg;
+                        noirData.Ear[0].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear[1].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear2[0].vel.x += 0.5f * noirFlpDirNeg;
+                        noirData.Ear2[1].vel.x += 0.5f * noirFlpDirNeg;
+                    }
+                    if (noirData.SuperCrawlPounce >= 20)
+                    {
+                        noirData.Ear[0].vel.y -= 0.35f;
+                        noirData.Ear[1].vel.y -= 0.35f;
+                        noirData.Ear2[0].vel.y -= 0.35f;
+                        noirData.Ear2[1].vel.y -= 0.35f;
                     }
                 }
             }
@@ -279,6 +300,28 @@ public partial class NoirCatto
             
             noirData.Ear[1].vel.x -= 0.5f;
             noirData.Ear2[1].vel.x += 0.5f;
+        }
+        #endregion
+        
+        #region LookDirection + Ear
+        if (self.player.superLaunchJump >= 20 || noirData.SuperCrawlPounce >= 20)
+        {
+            self.lookDirection *= 0.2f;
+            self.lookDirection += new Vector2(noirData.UnchangedInput[0].x, noirData.UnchangedInput[0].y);
+            
+            var ymod = noirData.UnchangedInput[0].y >= 0 ? noirData.UnchangedInput[0].y : noirData.UnchangedInput[0].y * 0.5f;
+            noirData.Ear[0].vel -= new Vector2(noirData.UnchangedInput[0].x, ymod) * 0.75f;
+            noirData.Ear[1].vel -= new Vector2(noirData.UnchangedInput[0].x, ymod) * 0.75f;
+            noirData.Ear2[0].vel -= new Vector2(noirData.UnchangedInput[0].x, ymod) * 0.75f;
+            noirData.Ear2[1].vel -= new Vector2(noirData.UnchangedInput[0].x, ymod) * 0.75f;
+        }
+        else
+        {
+            var ymod = self.lookDirection.y >= 0 ? self.lookDirection.y : 0f;
+            noirData.Ear[0].vel -= new Vector2(self.lookDirection.x, ymod).normalized * 0.25f;
+            noirData.Ear[1].vel -= new Vector2(self.lookDirection.x, ymod).normalized * 0.5f;
+            noirData.Ear2[0].vel -= new Vector2(self.lookDirection.x, ymod).normalized * 0.25f;
+            noirData.Ear2[1].vel -= new Vector2(self.lookDirection.x, ymod).normalized * 0.5f;
         }
         #endregion
         
@@ -300,12 +343,13 @@ public partial class NoirCatto
     {
         orig(self, sleaser, rcam, timestacker, campos);
         if (self.player.SlugCatClass != NoirName) return;
+        var noirData = NoirDeets.GetValue(self.player, NoirDataCtor);
 
         if (self.player.bodyMode == Player.BodyModeIndex.Crawl && self.player.animation == Player.AnimationIndex.None)
         {
             if (self.player.input[0].x != 0)
             {
-                sleaser.sprites[HeadSpr].rotation += -10f * self.player.flipDirection;
+                sleaser.sprites[HeadSpr].rotation += -10f * noirData.FlipDirection;
             }
         }
 
