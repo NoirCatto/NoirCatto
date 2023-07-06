@@ -124,7 +124,7 @@ public partial class NoirCatto : BaseUnityPlugin
         catch (Exception ex)
         {
             Logger.LogError(ex);
-            throw;
+            //throw;
         }
     }
 

@@ -26,6 +26,7 @@ public partial class NoirCatto
         return crit.Template.smallCreature || self.TotalMass > crit.TotalMass;
     }
 
+    //Spear not embed into wall fix
     private void SpearILUpdate(ILContext il)
     {
         try

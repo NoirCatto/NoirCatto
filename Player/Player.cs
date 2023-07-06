@@ -268,10 +268,12 @@ public partial class NoirCatto
         
         var noirData = NoirDeets.GetValue(self, NoirDataCtor);
 
+        //Moving all inputs one slot up
         for (var i = noirData.UnchangedInput.Length - 1; i > 0; i--)
         {
             noirData.UnchangedInput[i] = noirData.UnchangedInput[i - 1];
         }
+        //Copying original unmodified input
         noirData.UnchangedInput[0] = self.input[0];
         
 
