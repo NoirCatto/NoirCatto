@@ -82,6 +82,7 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="cp -T &quot;/home/master/Coding/CSharp/Rain World/NoirCatto/obj/Debug/net48/NoirCatto.dll&quot; &quot;/home/master/Games/Rain World/RainWorld_Data/StreamingAssets/mods/NoirCatto/plugins/NoirCatto.dll&quot;" />
+    <Exec Command="cp -T &quot;/home/master/Coding/CSharp/Rain World/NoirCatto/obj/Debug/net48/NoirCatto.pdb&quot; &quot;/home/master/Games/Rain World/RainWorld_Data/StreamingAssets/mods/NoirCatto/plugins/NoirCatto.pdb&quot;" />
   </Target>
 
 </Project>

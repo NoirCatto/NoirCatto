@@ -40,20 +40,20 @@ public partial class NoirCatto
      
         if (session.saveState.cycleNumber == 0)
         {
+            Room startRoom = null;
+            
             foreach (var player in self.Players)
             {
                 if (player.Room.name != StartingRoom) break;
                 var pState = (PlayerState)player.state;
+                
+                player.pos.Tile = new IntVector2(11 + pState.playerNumber, 54);
 
-                if (pState.playerNumber == 0 && pState.slugcatCharacter == NoirName)
-                {
-                    player.pos.Tile = new IntVector2(11, 77);
-                    if (Options.UseNoirStart.Value) player.Room.realizedRoom.AddObject(new NoirStart());
-                }
-                else
-                {
-                    player.pos.Tile = new IntVector2(11 + pState.playerNumber, 54);
-                }
+                startRoom ??= player.Room.realizedRoom;
+            }
+            if (Options.UseNoirStart.Value && startRoom != null)
+            {
+                startRoom.AddObject(new NoirStart());
             }
         }
     }
@@ -78,11 +78,26 @@ public partial class NoirCatto
         {
         }
 
+        public Player GetNoirOrNull()
+        {
+            foreach (var player in room.game.Players)
+            {
+                if (player.realizedCreature is Player realPlayer)
+                {
+                    if (realPlayer.SlugCatClass == NoirName)
+                    {
+                        return realPlayer;
+                    }
+                }
+            }
+            return null;
+        }
+        
         public override void Update(bool eu)
         {
             if (Cat == null)
             {
-                Cat = room.game.Players.Count <= 0 ? null : (Player)room.game.Players[0].realizedCreature;
+                Cat = room.game.Players.Count <= 0 ? null : GetNoirOrNull();
                 if (Cat != null) NoirData = NoirDeets.GetValue(Cat, NoirDataCtor);
                 return;
             }
