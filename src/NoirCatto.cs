@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security;
 using System.Security.Permissions;
 using BepInEx;
+using BepInEx.Logging;
 using SlugBase;
 
 #pragma warning disable CS0618
@@ -17,11 +18,15 @@ namespace NoirCatto;
 public partial class NoirCatto : BaseUnityPlugin
 {
     public static NoirCattoOptions ModOptions;
+    public static ManualLogSource LogSource;
+
+    public static bool RotundWorld;
 
     public NoirCatto()
     {
         try
         {
+            LogSource = Logger;
             ModOptions = new NoirCattoOptions(Logger);
         }
         catch (Exception ex)
@@ -45,6 +50,7 @@ public partial class NoirCatto : BaseUnityPlugin
             if (_isInit) return;
 
             Hooks.Apply();
+            LoadAtlases();
             
             MachineConnector.SetRegisteredOI("NoirCatto.NoirCatto", ModOptions);
             _isInit = true;
@@ -63,12 +69,12 @@ public partial class NoirCatto : BaseUnityPlugin
         {
             if (ModManager.ActiveMods.Any(x => x.id == "willowwisp.bellyplus"))
             {
-                //RotundWorld = true;
+                RotundWorld = true;
                 Logger.LogInfo("Rotund World detected! Noir gonna be chonky...");
             }
             else
             {
-                //RotundWorld = false;
+                RotundWorld = false;
             }
             
             if (!_isPostInit)
