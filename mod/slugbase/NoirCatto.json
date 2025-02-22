@@ -1,0 +1,51 @@
+{
+	"id": "NoirCatto",
+	"name": "Noir",
+	"description": "A black-and-white, curious cat, who fights with claw and tooth.",
+
+	"features": 
+	{
+	"color": "2f2e34",
+		"custom_colors": 
+		[
+			{ "name": "Body", "story": "2f2e34", "arena": [ "2f2e34", "2f2e17", "2f1517", "212434" ] },
+			{ "name": "Eyes", "story": "6b8de5", "arena": [ "6b8de5", "6b8de5", "6b8de5", "6b8de5" ] },
+			{ "name": "Fluff", "story": "e6e1e5", "arena": [ "f0f0ff", "ffff73", "ff7373", "a1afe5" ] },
+			{ "name": "Nose", "story": "6f5569", "arena": [ "6f5569", "6f5569", "6f5569", "6f5569" ] },
+			{ "name": "Paws", "story": "2e2d33", "arena": [ "2e2d33", "2e2d17", "2e1417", "1d1f2e" ] }
+		],
+
+		"karma_cap": 2,
+		"can_maul": true,
+		"diet": 
+		{
+			"meat": 0.75,
+			"corpses": 0.75,
+			"plants": 0.25,
+			"overrides": 
+			{
+				"Fly": 0.5,
+				"EggBugEgg": 1,
+				"FireEgg": 1,
+				"LanternMouse": 2,
+
+				"Seed": 1,
+				"DangleFruit": -1,
+				"WaterNut": -1,
+				"SlimeMold": -1,
+				"GooieDuck": -1,
+				"LillyPuck": -1,
+				"GlowWeed": -1,
+				"DandelionPeach": -1
+			}
+		},
+		"expedition_description": "On the hunt for the sake of thrill,<LINE> Noir prowls the land to the world's edge",
+		"world_state": ["Gourmand", "Red"],
+		
+		"select_menu_scene": "Slugcat_NoirCatto",
+		"select_menu_scene_ascended": "Slugcat_NoirCatto_Ghost",
+		"sleep_scene": "Slugcat_NoirCatto_Sleep"
+	}
+}
+
+
