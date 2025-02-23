@@ -12,8 +12,7 @@ public static class NoirCWT
     public static bool TryGetNoirData(this Player player, out NoirCatto.NoirData noirData) => TryGetNoirData(player.abstractCreature, out noirData);
     public static bool TryGetNoirData(this AbstractCreature crit, out NoirCatto.NoirData noirData)
     {
-        if (crit.creatureTemplate.type == CreatureTemplate.Type.Slugcat &&
-            crit.state is PlayerState state && state.slugcatCharacter == Const.NoirName)
+        if ((crit.creatureTemplate.type == CreatureTemplate.Type.Slugcat || crit.state is PlayerState) && crit.SlugCatClass() == Const.NoirName)
         {
             noirData = NoirDeets.GetValue(crit, _ => new NoirCatto.NoirData(crit));
             return true;

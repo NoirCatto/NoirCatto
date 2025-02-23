@@ -2,11 +2,35 @@ using System;
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MoreSlugcats;
 
 namespace NoirCatto;
 
 public static partial class Extensions
 {
+    public static SlugcatStats.Name SlugCatClass(this AbstractCreature crit) //Based off of Player.GetInitialSlugcatClass()
+    {
+        if (crit.realizedCreature is Player player)
+            return player.SlugCatClass;
+
+        if (crit.state is not PlayerState state)
+        {
+            NoirCatto.LogSource.LogError($"Not a Slugcat!: {crit.ID.ToString()}");
+            return SlugcatStats.Name.White;
+        }
+
+        if (ModManager.MSC && crit.creatureTemplate.TopAncestor().type == MoreSlugcatsEnums.CreatureTemplateType.SlugNPC)
+            return MoreSlugcatsEnums.SlugcatStatsName.Slugpup;
+
+        if (ModManager.CoopAvailable && crit.Room.world.game.IsStorySession)
+            return crit.world.game.rainWorld.options.jollyPlayerOptionsArray[state.playerNumber].playerClass ?? crit.world.game.GetStorySession.saveState.saveStateNumber;
+        else if (!ModManager.MSC || crit.Room.world.game.IsStorySession)
+            return state.slugcatCharacter;
+
+        NoirCatto.LogSource.LogInfo($"Unable to determine SlugCatClass for: {crit.ID.ToString()}");
+        return SlugcatStats.Name.White;
+    }
+
     #region Built-in values extensions
     public static float Map(this float x, float in_min, float in_max, float out_min, float out_max, bool clamp = false)
     {
