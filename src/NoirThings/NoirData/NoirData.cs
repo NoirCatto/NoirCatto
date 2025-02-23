@@ -26,27 +26,12 @@ public static class NoirCWT
 
 public partial class NoirCatto
 {
-    public class NoirData
+    public partial class NoirData
     {
         public readonly AbstractCreature AbstractCat;
         public  Player Cat => AbstractCat.realizedCreature as Player;
         public Player.AnimationIndex LastAnimation;
         public Player.AnimationIndex SpearThrownAnimation;
-
-        #region Graphics Variables
-        public const int NewSprites = 2;
-        public readonly int[] EarSpr = new int[2];
-        public int TotalSprites;
-
-        public readonly TailSegment[][] Ears =
-        [
-            new TailSegment[2],
-            new TailSegment[2]
-        ];
-        public readonly int[] EarsFlip = [1, 1];
-        public Vector2 LastHeadRotation;
-        public bool CallingAddToContainerFromOrigInitiateSprites;
-        #endregion
 
         public int StandCounter;
         public int CrawlTurnCounter;
@@ -115,81 +100,6 @@ public partial class NoirCatto
             AbstractCat = abstractCat;
         }
 
-        #region uh beam stuff I guess
-        public bool OnVerticalBeam()
-        {
-            return Cat?.bodyMode == Player.BodyModeIndex.ClimbingOnBeam;
-        }
-        public bool OnHorizontalBeam()
-        {
-            return Cat?.animation == Player.AnimationIndex.HangFromBeam || Cat?.animation == Player.AnimationIndex.StandOnBeam;
-        }
-        public bool OnAnyBeam()
-        {
-            return OnVerticalBeam() || OnHorizontalBeam();
-        }
-        public bool WasOnVerticalBeam()
-        {
-            return lastBodyModeInternal == Player.BodyModeIndex.ClimbingOnBeam;
-        }
-        public bool WasOnHorizontalBeam()
-        {
-            return lastAnimationInternal == Player.AnimationIndex.HangFromBeam || lastAnimationInternal == Player.AnimationIndex.StandOnBeam;
-        }
-        public bool WasOnAnyBeam()
-        {
-            return WasOnVerticalBeam() || WasOnHorizontalBeam();
-        }
-        #endregion
-
-        #region more beam stuff
-        private const int BeamLengthCap = 40;
-        public bool CanCrawlOnBeam()
-        {
-            var graphics = (PlayerGraphics)Cat?.graphicsModule;
-            if (graphics == null || Cat?.room == null) return false;
-
-            var beamLengthL = 0;
-            var beamLengthR = 0;
-            while (beamLengthR <= BeamLengthCap && Cat.room.GetTile(Cat.room.GetTilePosition(graphics.legs.pos + new Vector2(beamLengthR, 0f))).horizontalBeam)
-            {
-                beamLengthR++;
-            }
-            while (beamLengthL <= BeamLengthCap && Cat.room.GetTile(Cat.room.GetTilePosition(graphics.legs.pos + new Vector2(-beamLengthL, 0f))).horizontalBeam)
-            {
-                beamLengthL++;
-            }
-
-            return (Cat.animation == Player.AnimationIndex.StandOnBeam && beamLengthL + beamLengthR > BeamLengthCap && (!YinputForPole || YinputForPoleBlocker > 0));
-        }
-
-        public bool CanGrabBeam()
-        {
-            var graphics = (PlayerGraphics)Cat.graphicsModule;
-            if (graphics == null || Cat.room == null) return false;
-
-            Vector2 pos;
-            if (Cat.room.GetTile(Cat.room.GetTilePosition(Cat.bodyChunks[0].pos)).horizontalBeam) pos = Cat.bodyChunks[0].pos;
-            else if (Cat.room.GetTile(Cat.room.GetTilePosition(Cat.bodyChunks[1].pos)).horizontalBeam) pos = Cat.bodyChunks[1].pos;
-            else if (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.hands[0].pos)).horizontalBeam) pos = graphics.hands[0].pos;
-            else if (Cat.room.GetTile(Cat.room.GetTilePosition(graphics.hands[1].pos)).horizontalBeam) pos = graphics.hands[1].pos;
-            else return false;
-
-            var beamLengthL = 0;
-            var beamLengthR = 0;
-            while (Cat.room.GetTile(Cat.room.GetTilePosition(pos + new Vector2(beamLengthR, 0f))).horizontalBeam)
-            {
-                beamLengthR++;
-            }
-            while (Cat.room.GetTile(Cat.room.GetTilePosition(pos + new Vector2(-beamLengthL, 0f))).horizontalBeam)
-            {
-                beamLengthL++;
-            }
-
-            return beamLengthL + beamLengthR > BeamLengthCap;
-        }
-        #endregion
-
         public void Update()
         {
             if (Jumping)
@@ -229,26 +139,6 @@ public partial class NoirCatto
             GraspsAnyNull = Cat.grasps.Any(x => x is null);
             GraspsFirstNull = Cat.grasps[0] == null;
         }
-        
-        #region Graphics
-        public FAtlasElement ElementFromTexture(Texture2D texture, bool forceRedraw = false)
-        {
-            var name = texture.name + "_" + Cat.playerState.playerNumber;
-            if (forceRedraw)
-            {
-                var oldAtlas = Futile.atlasManager._atlases.FirstOrDefault(x => x.name == name);
-                if (oldAtlas != null)
-                {
-                    Futile.atlasManager._allElementsByName.Remove(oldAtlas.name);
-                    oldAtlas.Unload();
-                    Object.Destroy(oldAtlas.texture);
-                    Futile.atlasManager._atlases.Remove(oldAtlas);
-                }
-            }
-            var atlas = Futile.atlasManager.LoadAtlasFromTexture(name, texture, false);
-            return atlas.elements[0];
-        }
-        #endregion
     }
 
     //Hooks
