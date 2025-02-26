@@ -19,7 +19,16 @@ public partial class NoirCatto
         var playerArmAtlas = Futile.atlasManager.LoadAtlas("atlases/NoirCatto/NoirPlayerArm");
         var tailAtlas = Futile.atlasManager.LoadAtlas("atlases/NoirCatto/NoirTail");
         var earsAtlas = Futile.atlasManager.LoadAtlas("atlases/NoirCatto/NoirEars");
-        
+        HeadTexture = (Texture2D)headAtlas.texture;
+        FaceTexture = (Texture2D)faceAtlas.texture;
+        BodyTexture = (Texture2D)bodyAtlas.texture;
+        HipsTexture = (Texture2D)hipsAtlas.texture;
+        LeftHipsTexture = (Texture2D)leftHipsAtlas.texture;
+        RightHipsTexture = (Texture2D)rightHipsAtlas.texture;
+        LegsTexture = (Texture2D)legsAtlas.texture;
+        PlayerArmTexture = (Texture2D)playerArmAtlas.texture;
+        TailTexture = (Texture2D)tailAtlas.texture;
+        EarTexture = (Texture2D)earsAtlas.texture;
         //NoirBlueEyes = EyeTexture.GetPixels32().Where(c => c.a == 255).Distinct().Select(color32 => (Color)color32).ToArray();
     }
     
@@ -38,7 +47,10 @@ public partial class NoirCatto
     private const string NoirFace = "NoirFace";
     private const string NoirBodyA = "NoirBodyA";
     private const string NoirPlayerArm = "NoirPlayerArm";
+    private const string NoirOnTopOfTerrainHand = "NoirOnTopOfTerrainHand";
     private const string NoirHipsA = "NoirHipsA";
+    private const string NoirLeftHipsA = "NoirLeftHipsA";
+    private const string NoirRightHipsA = "NoirRightHipsA";
     private const string NoirLegs = "NoirLegs";
     private const string NoirTail = "NoirTail";
     private const string Noir = "Noir"; //Prefix for sprite replacement
@@ -74,6 +86,17 @@ public partial class NoirCatto
         Extensions.ColorFromHEX("7ba2e8"),
         Extensions.ColorFromHEX("6b8de5") //Darkest blue
     ];
+
+    public static Texture2D HeadTexture;
+    public static Texture2D FaceTexture;
+    public static Texture2D BodyTexture;
+    public static Texture2D HipsTexture;
+    public static Texture2D LeftHipsTexture;
+    public static Texture2D RightHipsTexture;
+    public static Texture2D LegsTexture;
+    public static Texture2D PlayerArmTexture;
+    public static Texture2D TailTexture;
+    public static Texture2D EarTexture;
     #endregion
 
     private static List<int> SprToReplace =
@@ -95,7 +118,6 @@ public partial class NoirCatto
                     continue; //For DMS compatibility
                 }
 
-
                 if (num == HeadSpr) //Pup Fix
                 {
                     if (!sleaser.sprites[num].element.name.Contains("HeadA"))
@@ -115,8 +137,11 @@ public partial class NoirCatto
                 sleaser.sprites[num].element = Futile.atlasManager.GetElementWithName(Noir + spr.name);
             }
         }
+    }
 
-        #region Custom Hips
+    private static void ReplaceHips(RoomCamera.SpriteLeaser sleaser, PlayerGraphics self, NoirData noirData, out string hipsName)
+    {
+        hipsName = NoirHipsA;
         if (sleaser.sprites[HipsSpr].element.name.StartsWith(Noir))
         {
             if (!self.player.standing && (self.player.animation == Player.AnimationIndex.None || self.player.animation == Player.AnimationIndex.CrawlTurn) ||
@@ -125,16 +150,18 @@ public partial class NoirCatto
                 var angle = Custom.AimFromOneVectorToAnother(self.player.bodyChunks[0].pos, self.player.bodyChunks[1].pos);
 
                 if (angle is > 0 and < 120)
-                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "Left" + "HipsA");
+                    hipsName = NoirLeftHipsA;
                 else if (angle is < 0 and > -120)
-                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "Right" + "HipsA");
+                    hipsName = NoirRightHipsA;
                 else
-                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "HipsA");
+                    hipsName = NoirHipsA;
+
+                if (!sleaser.sprites[HipsSpr].element.name.StartsWith(hipsName))
+                    sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(hipsName);
             }
-            else
-                sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(Noir + "HipsA");
+            else if (!sleaser.sprites[HipsSpr].element.name.StartsWith(hipsName))
+                sleaser.sprites[HipsSpr].element = Futile.atlasManager.GetElementWithName(hipsName);
         }
-        #endregion
     }
 
     private static Vector2 EarAttachPos(NoirData noirData, int earNum, float timestacker)

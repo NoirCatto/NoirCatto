@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Menu;
 using RWCustom;
 using SlugBase.DataTypes;
 using UnityEngine;
@@ -97,14 +99,12 @@ public partial class NoirCatto //Sprite replacement and layer management is here
             if (ModOptions.NoirHideEars.Value) //For.. DMS?
             {
                 foreach (var sprNum in noirData.EarSpr)
-                {
                     sleaser.sprites[sprNum].isVisible = false;
-                }
             }
 
             ReplaceSprites(sleaser, self, noirData);
-
-            //todo Recoloring Sprites
+            ReplaceHips(sleaser, self, noirData, out var hipsName);
+            InitRecolor(self, noirData);
 
             noirData.CallingAddToContainerFromOrigInitiateSprites = false;
             self.AddToContainer(sleaser, rcam, null);
@@ -145,6 +145,7 @@ public partial class NoirCatto //Sprite replacement and layer management is here
         if (rcam.room.game.DEBUGMODE) return;
 
         ReplaceSprites(sleaser, self, noirData);
+        ReplaceHips(sleaser, self, noirData, out var hipsName);
         MoveMeshes(noirData, sleaser, timestacker, campos);
 
         #region Moving Sprites to front/back
@@ -182,28 +183,7 @@ public partial class NoirCatto //Sprite replacement and layer management is here
                 sleaser.sprites[LegsSpr].y -= 6f; //Adjustment for the limited space in leg sprite
         }
 
-        if (sleaser.sprites[FaceSpr].element.name.StartsWith(Noir))
-        {
-            sleaser.sprites[FaceSpr].color = Color.white; //Joar, why do you set this in drawsprites...
-        }
-        if (sleaser.sprites[TailSpr].element.name.StartsWith(Noir))
-        {
-            // if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
-            //     sleaser.sprites[TailSpr].element = Futile.atlasManager.GetElementWithName(NoirTail + "_" + playerNum);
-            ApplyMeshTexture(sleaser.sprites[TailSpr] as TriangleMesh);
-        }
-        for (var i = 0; i < noirData.EarSpr.Length; i++)
-        {
-            var EarSprite = noirData.EarSpr[i];
-            //var name = NoirEars + "_" + i;
-            if (sleaser.sprites[EarSprite].element.name.StartsWith(Noir))
-            {
-                // if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
-                //     sleaser.sprites[EarSprite].element = Futile.atlasManager.GetElementWithName(name + "_" + playerNum);
-                ApplyMeshTexture(sleaser.sprites[EarSprite] as TriangleMesh);
-            }
-        }
-        //todo Recoloring sprites
+        ApplyRecolor(self, sleaser, noirData, hipsName);
     }
 
     public static void PlayerGraphicsOnApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics self, RoomCamera.SpriteLeaser sleaser, RoomCamera rcam, RoomPalette palette)
@@ -224,6 +204,303 @@ public partial class NoirCatto //Sprite replacement and layer management is here
         {
             noirData.Ears[i][0].Reset(EarAttachPos(noirData, i, 1f));
             noirData.Ears[i][1].Reset(EarAttachPos(noirData, i, 1f));
+        }
+    }
+
+    //Texture recolor
+    private static void InitRecolor(PlayerGraphics self, NoirData noirData)
+    {
+        Color? eyeColor = null;
+        Color? bodyColor = null;
+        Color? fluffColor = null;
+        Color? pawsColor = null;
+        Color? noseColor = null;
+        var playerNum = self.player.playerState.playerNumber;
+
+        if (PlayerGraphics.CustomColorsEnabled() || self.player.room?.game.IsArenaSession == true)
+        {
+            eyeColor = PlayerColor.GetCustomColor(self, CustomColorEyes);
+            bodyColor = PlayerColor.GetCustomColor(self, CustomColorBody);
+            fluffColor = PlayerColor.GetCustomColor(self, CustomColorFluff);
+            pawsColor = PlayerColor.GetCustomColor(self, CustomColorPaws);
+            noseColor = PlayerColor.GetCustomColor(self, CustomColorNose);
+        }
+        if (TryGetCustomJollyColor(playerNum, CustomColorEyes, out var customColorEye)) eyeColor = customColorEye;
+        if (TryGetCustomJollyColor(playerNum, CustomColorBody, out var customColorBody)) bodyColor = customColorBody;
+        if (TryGetCustomJollyColor(playerNum, CustomColorFluff, out var customColorFluff)) fluffColor = customColorFluff;
+        if (TryGetCustomJollyColor(playerNum, CustomColorPaws, out var customColorPaws)) pawsColor = customColorPaws;
+        if (TryGetCustomJollyColor(playerNum, CustomColorNose, out var customColorNose)) noseColor = customColorNose;
+
+        var recolorEyes = eyeColor != null && eyeColor.Value != NoirBlueEyesDefault;
+        var recolorBlack = bodyColor != null && bodyColor.Value != NoirBlack;
+        var recolorWhite = fluffColor != null && fluffColor.Value != NoirWhite;
+        var recolorPaws = pawsColor != null && pawsColor.Value != NoirBlackPaws;
+        var recolorNose = noseColor != null && noseColor.Value != NoirPurple;
+
+        if (recolorWhite)
+        {
+            //OnTopOfTerrainHand
+            var ototHandTexture = GetTextureFromFAtlasElement(Futile.atlasManager.GetElementWithName(NoirOnTopOfTerrainHand), PlayerArmTexture);
+            ototHandTexture.name = NoirOnTopOfTerrainHand;
+
+            ototHandTexture.RecolorTexture(NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(ototHandTexture, true);
+        }
+        if (recolorBlack || recolorWhite)
+        {
+            //Tail
+            var tailTexture = TailTexture.Clone();
+            tailTexture.name = NoirTail;
+
+            if (recolorBlack) tailTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+            if (recolorWhite) tailTexture.RecolorTexture(NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(tailTexture, true);
+
+            //Head
+            var headNames = new List<string>();
+            for (var i = 0; i <= 17; i++)
+                headNames.Add("NoirHeadA" + i);
+            foreach (var name in headNames)
+            {
+                var headTexture = GetTextureFromFAtlasElement(Futile.atlasManager.GetElementWithName(name), HeadTexture);
+                headTexture.name = name;
+                if (recolorBlack) headTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+                if (recolorWhite) headTexture.RecolorTexture(NoirWhite, fluffColor.Value);
+                noirData.ElementFromTexture(headTexture, true);
+            }
+
+            //Ears
+            for (var i = 0; i < noirData.EarSpr.Length; i++)
+            {
+                var earTexture = EarTexture.Clone();
+                earTexture.name = NoirEars + "_" + i;
+
+                if (recolorBlack) earTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+                if (recolorWhite) earTexture.RecolorTexture(NoirWhite, fluffColor.Value);
+                noirData.ElementFromTexture(earTexture, true);
+            }
+
+            //BodyA
+            var bodyTexture = BodyTexture.Clone();
+            bodyTexture.name = NoirBodyA;
+
+            if (recolorBlack) bodyTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+            if (recolorWhite) bodyTexture.RecolorTexture(NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(bodyTexture, true);
+
+            //Hips
+            var hipsTexture = HipsTexture.Clone();
+            hipsTexture.name = NoirHipsA;
+
+            if (recolorBlack && recolorWhite) hipsTexture.RecolorTextureNoSurvivors(NoirBlack, bodyColor.Value, NoirWhite, fluffColor.Value);
+            else if (recolorBlack) hipsTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+            else if (recolorWhite) hipsTexture.RecolorTextureNoSurvivors(NoirBlack, NoirBlack, NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(hipsTexture, true);
+
+            var leftHipsTexture = LeftHipsTexture.Clone();
+            leftHipsTexture.name = NoirLeftHipsA;
+
+            if (recolorBlack && recolorWhite) leftHipsTexture.RecolorTextureNoSurvivors(NoirBlack, bodyColor.Value, NoirWhite, fluffColor.Value);
+            else if (recolorBlack) leftHipsTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+            else if (recolorWhite) leftHipsTexture.RecolorTextureNoSurvivors(NoirBlack, NoirBlack, NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(leftHipsTexture, true);
+
+            var rightHipsTexture = RightHipsTexture.Clone();
+            rightHipsTexture.name = NoirRightHipsA;
+
+            if (recolorBlack && recolorWhite) rightHipsTexture.RecolorTextureNoSurvivors(NoirBlack, bodyColor.Value, NoirWhite, fluffColor.Value);
+            else if (recolorBlack) rightHipsTexture.RecolorTexture(NoirBlack, bodyColor.Value);
+            else if (recolorWhite) rightHipsTexture.RecolorTextureNoSurvivors(NoirBlack, NoirBlack, NoirWhite, fluffColor.Value);
+            noirData.ElementFromTexture(rightHipsTexture, true);
+        }
+        if (recolorBlack || recolorWhite || recolorPaws)
+        {
+            //Legs
+            var legsNames = new List<string>();
+            for (var i = 0; i <= 6; i++)
+                legsNames.Add("NoirLegsA" + i);
+            for (var i = 0; i <= 1; i++)
+                legsNames.Add("NoirLegsAAir" + i);
+            for (var i = 0; i <= 6; i++)
+                legsNames.Add("NoirLegsAClimbing" + i);
+            for (var i = 0; i <= 5; i++)
+                legsNames.Add("NoirLegsACrawling" + i);
+            for (var i = 0; i <= 6; i++)
+                legsNames.Add("NoirLegsAOnPole" + i);
+            for (var i = 0; i <= 6; i++)
+                legsNames.Add("NoirLegsAOnPole" + i);
+            legsNames.Add("NoirLegsAPole");
+            legsNames.Add("NoirLegsAVerticalPole");
+            legsNames.Add("NoirLegsAWall");
+            foreach (var name in legsNames)
+            {
+                var texture = GetTextureFromFAtlasElement(Futile.atlasManager.GetElementWithName(name), LegsTexture);
+                texture.name = name;
+                if (recolorBlack && recolorWhite && recolorPaws) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [bodyColor.Value, pawsColor.Value], NoirWhite, fluffColor.Value);
+                else if (recolorBlack && recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [bodyColor.Value, NoirBlackPaws], NoirWhite, fluffColor.Value);
+                else if (recolorPaws && recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [NoirBlack, pawsColor.Value], NoirWhite, fluffColor.Value);
+                else if (recolorBlack && recolorPaws) texture.RecolorTexture([NoirBlack, NoirBlackPaws], [bodyColor.Value, pawsColor.Value]);
+                else if (recolorBlack) texture.RecolorTexture(NoirBlack, bodyColor.Value);
+                else if (recolorPaws) texture.RecolorTexture(NoirBlackPaws, pawsColor.Value);
+                else if (recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [NoirBlack, NoirBlackPaws], NoirWhite, fluffColor.Value);
+                    noirData.ElementFromTexture(texture, true);
+            }
+
+            //Arms
+            var armNames = new List<string>();
+            for (var i = 0; i <= 12; i++)
+                armNames.Add("NoirPlayerArm" + i);
+            foreach (var name in armNames)
+            {
+                var texture = GetTextureFromFAtlasElement(Futile.atlasManager.GetElementWithName(name), PlayerArmTexture);
+                texture.name = name;
+                if (recolorBlack && recolorWhite && recolorPaws) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [bodyColor.Value, pawsColor.Value], NoirWhite, fluffColor.Value);
+                else if (recolorBlack && recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [bodyColor.Value, NoirBlackPaws], NoirWhite, fluffColor.Value);
+                else if (recolorPaws && recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [NoirBlack, pawsColor.Value], NoirWhite, fluffColor.Value);
+                else if (recolorBlack && recolorPaws) texture.RecolorTexture([NoirBlack, NoirBlackPaws], [bodyColor.Value, pawsColor.Value]);
+                else if (recolorBlack) texture.RecolorTexture(NoirBlack, bodyColor.Value);
+                else if (recolorPaws) texture.RecolorTexture(NoirBlackPaws, pawsColor.Value);
+                else if (recolorWhite) texture.RecolorTextureNoSurvivors([NoirBlack, NoirBlackPaws], [NoirBlack, NoirBlackPaws], NoirWhite, fluffColor.Value);
+                noirData.ElementFromTexture(texture, true);
+            }
+
+        }
+        if (recolorEyes || recolorNose || recolorWhite)
+        {
+            //Face
+            var faceNames = new List<string>();
+            for (var i = 0; i <= 8; i++)
+                faceNames.Add("NoirFaceA" + i);
+            for (var i = 0; i <= 8; i++)
+                faceNames.Add("NoirFaceB" + i);
+            faceNames.Add("NoirFaceDead");
+            faceNames.Add("NoirFaceStunned");
+            foreach (var name in faceNames)
+            {
+                var texture = GetTextureFromFAtlasElement(Futile.atlasManager.GetElementWithName(name), FaceTexture);
+                texture.name = name;
+                if (recolorEyes && recolorNose && recolorWhite) texture.RecolorTextureAndRemainingMagically([NoirPurple, NoirWhite], [noseColor.Value, fluffColor.Value], eyeColor.Value);
+                else if (recolorEyes && recolorNose) texture.RecolorTextureAndRemainingMagically([NoirPurple, NoirWhite], [noseColor.Value, NoirWhite], eyeColor.Value);
+                else if (recolorEyes && recolorWhite) texture.RecolorTextureAndRemainingMagically([NoirPurple, NoirWhite], [NoirPurple, fluffColor.Value], eyeColor.Value);
+                else if (recolorNose && recolorWhite) texture.RecolorTexture([NoirPurple, NoirWhite], [noseColor.Value, fluffColor.Value]);
+                else if (recolorEyes) texture.RecolorTextureMagically(NoirBlueEyes, eyeColor.Value);
+                else if (recolorNose) texture.RecolorTexture(NoirPurple, noseColor.Value);
+                else if (recolorWhite) texture.RecolorTexture(NoirWhite, fluffColor.Value);
+                noirData.ElementFromTexture(texture, true);
+            }
+        }
+    }
+
+    private static void ApplyRecolor(PlayerGraphics self, RoomCamera.SpriteLeaser sleaser, NoirData noirData, string hipsName)
+    {
+        Color? eyeColor = null;
+        Color? bodyColor = null;
+        Color? fluffColor = null;
+        Color? pawsColor = null;
+        Color? noseColor = null;
+        var playerNum = self.player.playerState.playerNumber;
+
+        if (PlayerGraphics.CustomColorsEnabled() || self.player.room?.game.IsArenaSession == true)
+        {
+            eyeColor = PlayerColor.GetCustomColor(self, CustomColorEyes);
+            bodyColor = PlayerColor.GetCustomColor(self, CustomColorBody);
+            fluffColor = PlayerColor.GetCustomColor(self, CustomColorFluff);
+            pawsColor = PlayerColor.GetCustomColor(self, CustomColorPaws);
+            noseColor = PlayerColor.GetCustomColor(self, CustomColorNose);
+        }
+        if (TryGetCustomJollyColor(playerNum, CustomColorEyes, out var customColorEye)) eyeColor = customColorEye;
+        if (TryGetCustomJollyColor(playerNum, CustomColorBody, out var customColorBody)) bodyColor = customColorBody;
+        if (TryGetCustomJollyColor(playerNum, CustomColorFluff, out var customColorFluff)) fluffColor = customColorFluff;
+        if (TryGetCustomJollyColor(playerNum, CustomColorPaws, out var customColorPaws)) pawsColor = customColorPaws;
+        if (TryGetCustomJollyColor(playerNum, CustomColorNose, out var customColorNose)) noseColor = customColorNose;
+
+        if (StartsWithNoir(FaceSpr)) //For DMS compatibility
+        {
+            sleaser.sprites[FaceSpr].color = Color.white; //Joar, why do you set this in drawsprites...
+            if ((eyeColor != null && eyeColor.Value != NoirBlueEyesDefault) || (noseColor != null && noseColor.Value != NoirPurple) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                ApplyElement2(FaceSpr);
+        }
+
+        if (StartsWithNoir(TailSpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                ApplyElement(TailSpr, NoirTail);
+            ApplyMeshTexture(sleaser.sprites[TailSpr] as TriangleMesh);
+        }
+        if (StartsWithNoir(HeadSpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                ApplyElement2(HeadSpr);
+        }
+        for (var i = 0; i < noirData.EarSpr.Length; i++)
+        {
+            var EarSprite = noirData.EarSpr[i];
+            var name = NoirEars + "_" + i;
+            if (StartsWithNoir(EarSprite))
+            {
+                if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                    ApplyElement(EarSprite, name);
+                ApplyMeshTexture(sleaser.sprites[EarSprite] as TriangleMesh);
+            }
+        }
+        if (StartsWithNoir(BodySpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                ApplyElement(BodySpr, NoirBodyA);
+        }
+        if (StartsWithNoir(HipsSpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite))
+                ApplyElement(HipsSpr, hipsName);
+        }
+        if (StartsWithNoir(LegsSpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite) || (pawsColor != null && pawsColor.Value != NoirBlackPaws))
+                ApplyElement2(LegsSpr);
+        }
+        if (StartsWithNoir(ArmSpr))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite) || (pawsColor != null && pawsColor.Value != NoirBlackPaws))
+                ApplyElement2(ArmSpr);
+        }
+        if (StartsWithNoir(ArmSpr2))
+        {
+            if ((bodyColor != null && bodyColor.Value != NoirBlack) || (fluffColor != null && fluffColor.Value != NoirWhite) || (pawsColor != null && pawsColor.Value != NoirBlackPaws))
+                ApplyElement2(ArmSpr2);
+        }
+        if (StartsWithNoir(OTOTArmSpr))
+        {
+            if (fluffColor != null && fluffColor.Value != NoirWhite)
+                ApplyElement(OTOTArmSpr, NoirOnTopOfTerrainHand);
+        }
+        if (StartsWithNoir(OTOTArmSpr2))
+        {
+            if (fluffColor != null && fluffColor.Value != NoirWhite)
+                ApplyElement(OTOTArmSpr2, NoirOnTopOfTerrainHand);
+        }
+
+        return; //code below won't run unless called
+        bool StartsWithNoir(int sprNum)
+        {
+            return sleaser.sprites[sprNum].element.name.StartsWith(Noir);
+        }
+        void ApplyElement(int sprNum, string sprName)
+        {
+            var name = sprName + "_" + playerNum;
+            if (sleaser.sprites[sprNum].element.name != name)
+            {
+                LogSource.LogInfo($"element.name: {sleaser.sprites[sprNum].element.name} ; intended name: {name}"); //todo remove when done
+                sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(name);
+            }
+        }
+        void ApplyElement2(int sprNum)
+        {
+            var suffix = "_" + playerNum;
+            if (!sleaser.sprites[sprNum].element.name.EndsWith(suffix))
+            {
+                LogSource.LogInfo($"element.name: {sleaser.sprites[sprNum].element.name} ; intended name: {sleaser.sprites[sprNum].element.name + suffix}"); //todo remove when done
+                sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(sleaser.sprites[sprNum].element.name + suffix);
+            }
         }
     }
 
