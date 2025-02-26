@@ -488,19 +488,13 @@ public partial class NoirCatto //Sprite replacement and layer management is here
         {
             var name = sprName + "_" + playerNum;
             if (sleaser.sprites[sprNum].element.name != name)
-            {
-                LogSource.LogInfo($"element.name: {sleaser.sprites[sprNum].element.name} ; intended name: {name}"); //todo remove when done
                 sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(name);
-            }
         }
         void ApplyElement2(int sprNum)
         {
             var suffix = "_" + playerNum;
             if (!sleaser.sprites[sprNum].element.name.EndsWith(suffix))
-            {
-                LogSource.LogInfo($"element.name: {sleaser.sprites[sprNum].element.name} ; intended name: {sleaser.sprites[sprNum].element.name + suffix}"); //todo remove when done
                 sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(sleaser.sprites[sprNum].element.name + suffix);
-            }
         }
     }
 
