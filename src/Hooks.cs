@@ -14,6 +14,11 @@ public static class Hooks
         On.Player.UpdateAnimation += PlayerOnUpdateAnimation;
         On.Player.MovementUpdate += PlayerOnMovementUpdate;
         On.Player.Jump += PlayerOnJump;
+        On.Player.ThrowObject += PlayerOnThrowObject;
+        On.Player.ThrownSpear += PlayerOnThrownSpear;
+
+        On.Player.PickupCandidate += PlayerOnPickupCandidate;
+        On.Player.GrabUpdate += PlayerOnGrabUpdate;
 
         On.PlayerGraphics.ctor += PlayerGraphicsOnctor;
         On.PlayerGraphics.InitiateSprites += PlayerGraphicsOnInitiateSprites;
@@ -32,12 +37,28 @@ public static class Hooks
         On.JollyCoop.JollyMenu.SymbolButtonTogglePupButton.HasUniqueSprite += SymbolButtonTogglePupButtonOnHasUniqueSprite;
         On.JollyCoop.JollyMenu.JollyPlayerSelector.GetPupButtonOffName += JollyPlayerSelectorOnGetPupButtonOffName;
 
+        On.Menu.Menu.Update += MenuOnUpdate;
+        On.Menu.Menu.CommunicateWithUpcomingProcess += MenuOnCommunicateWithUpcomingProcess;
+
+        On.RainWorld.Update += RainWorldOnUpdate;
+        On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
+        On.RainWorldGame.ctor += RainWorldGameOnctor;
+
+        On.AbstractPhysicalObject.Realize += AbstractObjectType.AbstractPhysicalObjectOnRealize;
+        On.AbstractPhysicalObject.Abstractize += AbstractPhysicalObjectOnAbstractize;
+        On.SeedCob.PlaceInRoom += SeedCobOnPlaceInRoom;
+        On.Spear.Update += SpearOnUpdate;
+
         ApplyIL();
     }
 
     private static void ApplyIL()
     {
         IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
+        IL.SeedCob.Update += SeedCobILUpdate;
+        IL.Weapon.Update += WeaponILUpdate;
+        IL.SharedPhysics.TraceProjectileAgainstBodyChunks += SharedPhysicsILTraceProjectileAgainstBodyChunks;
+        IL.Spear.Update += Fixes.SpearILUpdate;
     }
 
    

@@ -117,6 +117,11 @@ public partial class NoirCatto
             GraspsAnyNull = Cat.grasps.Any(x => x is null);
             GraspsFirstNull = Cat.grasps[0] == null;
         }
+
+        public void UpdateRealTime()
+        {
+            MeowUpdate(this);
+        }
     }
 
     //Hooks
@@ -126,5 +131,20 @@ public partial class NoirCatto
 
         if (!self.TryGetNoirData(out var noirData)) return;
         noirData.Update();
+    }
+
+    public static void RainWorldOnUpdate(On.RainWorld.orig_Update orig, RainWorld self)
+    {
+        orig(self);
+        if (self.processManager?.currentMainLoop is not RainWorldGame game) return;
+        if (game.GamePaused) return;
+        foreach (var absPlayer in game.Players)
+        {
+            var player = (Player)absPlayer.realizedCreature;
+            if (player == null) continue;
+
+            if (!player.TryGetNoirData(out var noirData)) continue;
+            noirData.UpdateRealTime();
+        }
     }
 }

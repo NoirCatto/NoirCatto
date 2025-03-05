@@ -8,6 +8,7 @@ namespace NoirCatto;
 
 public static partial class Extensions
 {
+    #region RainWorld Specific
     public static SlugcatStats.Name SlugCatClass(this AbstractCreature crit) //Based off of Player.GetInitialSlugcatClass()
     {
         if (crit.realizedCreature is Player player)
@@ -30,6 +31,9 @@ public static partial class Extensions
         NoirCatto.LogSource.LogInfo($"Unable to determine SlugCatClass for: {crit.ID.ToString()}");
         return SlugcatStats.Name.White;
     }
+    public static bool IsSmallerThanMe(this Player self, Creature crit) => crit.Template.smallCreature || self.TotalMass > crit.TotalMass;
+    public static bool IsSmallerThanMe(this Creature self, Creature crit) => self.TotalMass > crit.TotalMass;
+    #endregion
 
     #region Built-in values extensions
     public static float Map(this float x, float in_min, float in_max, float out_min, float out_max, bool clamp = false)

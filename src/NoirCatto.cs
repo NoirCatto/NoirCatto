@@ -27,7 +27,7 @@ public partial class NoirCatto : BaseUnityPlugin
         try
         {
             LogSource = Logger;
-            ModOptions = new NoirCattoOptions(Logger);
+            ModOptions = new NoirCattoOptions();
         }
         catch (Exception ex)
         {
@@ -51,6 +51,7 @@ public partial class NoirCatto : BaseUnityPlugin
 
             Hooks.Apply();
             LoadAtlases();
+            LoadSounds();
             
             MachineConnector.SetRegisteredOI("NoirCatto.NoirCatto", ModOptions);
             _isInit = true;

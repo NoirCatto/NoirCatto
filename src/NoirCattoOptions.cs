@@ -11,16 +11,13 @@ namespace NoirCatto;
 
 public class NoirCattoOptions : OptionInterface
 {
-    public readonly ManualLogSource Logger;
-    public NoirCattoOptions(ManualLogSource loggerSource)
+    public NoirCattoOptions()
     {
-        Logger = loggerSource;
-        
         NoirAltSlashConditions = config.Bind(nameof(NoirAltSlashConditions), false);
         NoirBuffSlash = config.Bind(nameof(NoirBuffSlash), false);
         NoirAutoSlash = config.Bind(nameof(NoirAutoSlash), false);
         NoirDisableAutoCrouch = config.Bind(nameof(NoirDisableAutoCrouch), false);
-        //NoirUseCustomStart = config.Bind(nameof(NoirUseCustomStart), NoirCatto.CustomStartMode.Story);
+        NoirUseCustomStart = config.Bind(nameof(NoirUseCustomStart), NoirCatto.CustomStartMode.Story);
         NoirAttractiveMeow = config.Bind(nameof(NoirAttractiveMeow), true);
         NoirHideEars = config.Bind(nameof(NoirHideEars), false);
         NoirMeowKey = config.Bind(nameof(NoirMeowKey), KeyCode.LeftAlt);
@@ -30,7 +27,7 @@ public class NoirCattoOptions : OptionInterface
     public Configurable<bool> NoirBuffSlash;
     public Configurable<bool> NoirAutoSlash;
     public Configurable<bool> NoirDisableAutoCrouch;
-    //public Configurable<NoirCatto.CustomStartMode> NoirUseCustomStart;
+    public Configurable<NoirCatto.CustomStartMode> NoirUseCustomStart;
     public Configurable<bool> NoirAttractiveMeow;
     public Configurable<bool> NoirHideEars;
     public Configurable<KeyCode> NoirMeowKey;
