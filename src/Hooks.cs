@@ -44,6 +44,14 @@ public static class Hooks
         On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
         On.RainWorldGame.ctor += RainWorldGameOnctor;
         On.RegionGate.customOEGateRequirements += RegionGateOncustomOEGateRequirements;
+        On.Room.AddObject += (orig, self, obj) =>
+        {
+            if (self.updateList.Contains(obj))
+                return; //If another mod adds stuff to Room twice deliberately, they're doing something marginally wrong
+
+            orig(self, obj);
+            NoirCatto.RoomOnAddObject(self, obj);
+        };
 
         On.SSOracleBehavior.PebblesConversation.AddEvents += PebblesConversationOnAddEvents;
         On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversationOnAddEvents;
