@@ -22,5 +22,11 @@ public static class Hooks
         On.PlayerGraphics.Update += PlayerGraphicsOnUpdate;
         On.SlugcatHand.EngageInMovement += SlugcatHandOnEngageInMovement;
         On.Player.GraphicsModuleUpdated += PlayerOnGraphicsModuleUpdated;
+
+        //Jolly menu
+        On.PlayerGraphics.JollyFaceColorMenu += PlayerGraphicsOnJollyFaceColorMenu;
+        On.PlayerGraphics.JollyUniqueColorMenu += PlayerGraphicsOnJollyUniqueColorMenu;
+        On.JollyCoop.JollyMenu.SymbolButtonTogglePupButton.HasUniqueSprite += SymbolButtonTogglePupButtonOnHasUniqueSprite;
+        On.JollyCoop.JollyMenu.JollyPlayerSelector.GetPupButtonOffName += JollyPlayerSelectorOnGetPupButtonOffName;
     }
 }
