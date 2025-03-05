@@ -13,7 +13,7 @@ using SlugBase;
 
 namespace NoirCatto;
 
-[BepInPlugin("NoirCatto.NoirCatto", "NoirCatto", "1.0.0")]
+[BepInPlugin(Const.MOD_ID, "NoirCatto", Const.MOD_VERSION)]
 [BepInDependency("slime-cubed.slugbase")]
 public partial class NoirCatto : BaseUnityPlugin
 {

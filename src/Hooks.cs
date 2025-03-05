@@ -5,6 +5,7 @@ public static class Hooks
 {
     public static void Apply()
     {
+        //Player
         On.SlugcatStats.ctor += SlugcatStatsOnctor;
         On.Player.AllowGrabbingBatflys += PlayerOnAllowGrabbingBatflys;
 
@@ -20,6 +21,7 @@ public static class Hooks
         On.Player.PickupCandidate += PlayerOnPickupCandidate;
         On.Player.GrabUpdate += PlayerOnGrabUpdate;
 
+        //PlayerGraphics
         On.PlayerGraphics.ctor += PlayerGraphicsOnctor;
         On.PlayerGraphics.InitiateSprites += PlayerGraphicsOnInitiateSprites;
         On.PlayerGraphics.AddToContainer += PlayerGraphicsOnAddToContainer;
@@ -37,9 +39,11 @@ public static class Hooks
         On.JollyCoop.JollyMenu.SymbolButtonTogglePupButton.HasUniqueSprite += SymbolButtonTogglePupButtonOnHasUniqueSprite;
         On.JollyCoop.JollyMenu.JollyPlayerSelector.GetPupButtonOffName += JollyPlayerSelectorOnGetPupButtonOffName;
 
+        //Menu
         On.Menu.Menu.Update += MenuOnUpdate;
         On.Menu.Menu.CommunicateWithUpcomingProcess += MenuOnCommunicateWithUpcomingProcess;
 
+        //RW / World / Room
         On.RainWorld.Update += RainWorldOnUpdate;
         On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
         On.RainWorldGame.ctor += RainWorldGameOnctor;
@@ -53,13 +57,21 @@ public static class Hooks
             NoirCatto.RoomOnAddObject(self, obj);
         };
 
+        //Oracle
         On.SSOracleBehavior.PebblesConversation.AddEvents += PebblesConversationOnAddEvents;
         On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversationOnAddEvents;
 
+        //Objects
         On.AbstractPhysicalObject.Realize += AbstractObjectType.AbstractPhysicalObjectOnRealize;
         On.AbstractPhysicalObject.Abstractize += AbstractPhysicalObjectOnAbstractize;
         On.SeedCob.PlaceInRoom += SeedCobOnPlaceInRoom;
         On.Spear.Update += SpearOnUpdate;
+
+        //CustomSaveData
+        On.PlayerProgression.ClearOutSaveStateFromMemory += SaveThings.CustomSaveData.PlayerProgressionOnClearOutSaveStateFromMemory;
+        On.PlayerProgression.WipeSaveState += SaveThings.CustomSaveData.PlayerProgressionOnWipeSaveState;
+        On.RainWorldGame.Win += SaveThings.CustomSaveData.RainWorldGameOnWin;
+        //On.StoryGameSession.ctor += SaveThings.CustomSaveData.StoryGameSessionOnctor;
 
         ApplyIL();
     }
