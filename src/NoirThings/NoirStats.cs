@@ -22,7 +22,7 @@ public partial class NoirCatto
         }
     }
 
-    private const float NoirCrawlSpeedFac = 2.5f;
+    public const float NoirCrawlSpeedFac = 2.5f;
 
     public static bool PlayerOnAllowGrabbingBatflys(On.Player.orig_AllowGrabbingBatflys orig, Player self)
     {

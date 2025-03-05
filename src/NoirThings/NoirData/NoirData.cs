@@ -28,7 +28,7 @@ public partial class NoirCatto
     public partial class NoirData
     {
         public readonly AbstractCreature AbstractCat;
-        public  Player Cat => AbstractCat.realizedCreature as Player;
+        public Player Cat => AbstractCat.realizedCreature as Player;
         public Player.AnimationIndex LastAnimation;
         public Player.AnimationIndex SpearThrownAnimation;
 
@@ -38,22 +38,10 @@ public partial class NoirCatto
         public int SuperCrawlPounce;
         public int ClimbCounter;
         public int ClimbCooldown;
-        public bool YinputForPole;
-        public int YinputForPoleBlocker;
         public bool Jumping;
         public bool JumpInitiated;
         public bool LastJumpFromHorizontalBeam;
         public bool FrontCrawlFlip;
-
-        public readonly int[] SlashCooldown = new[] { 0, 0 };
-        public int AirSlashCooldown;
-        public int AutoSlashCooldown;
-        public int CombinedBonus => ComboBonus + MovementBonus + RotundnessBonus;
-        public int ComboBonus;
-        public int MovementBonus;
-        public int RotundnessBonus;
-        public int ComboTimer;
-        public int rjumpTimer;
 
         public bool GraspsAllNull;
         public bool GraspsAnyNull;
@@ -61,7 +49,6 @@ public partial class NoirCatto
 
         public float MeowPitch = 1f;
         public const float DefaultFirstChunkMass = 0.315f;
-
 
         public int FlipDirection
         {
@@ -80,16 +67,6 @@ public partial class NoirCatto
             }
         }
 
-        private Player.InputPackage[] _unchangedInput;
-
-        public Player.InputPackage[] UnchangedInput
-        {
-            get
-            {
-                return _unchangedInput ??= new Player.InputPackage[Cat.input.Length];
-            }
-        }
-
         private Player.AnimationIndex lastAnimationInternal;
         private Player.BodyModeIndex lastBodyModeInternal;
         
@@ -101,6 +78,8 @@ public partial class NoirCatto
 
         public void Update()
         {
+            CombatUpdate();
+
             if (Jumping)
             {
                 if (Cat.mainBodyChunk.pos.y < Cat.mainBodyChunk.lastPos.y && Cat.animation != Player.AnimationIndex.RocketJump &&
@@ -125,7 +104,7 @@ public partial class NoirCatto
                 }
             }
 
-            if (RotundWorld)
+            if (ModRotundWorld)
             {
                 MeowPitch = 1f - (Cat.bodyChunks[1].mass - DefaultFirstChunkMass) * 0.65f;
                 if (MeowPitch < 0.15f) MeowPitch = 0.15f;

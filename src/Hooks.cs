@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace NoirCatto;
 using static NoirCatto;
 
@@ -11,6 +9,11 @@ public static class Hooks
         On.Player.AllowGrabbingBatflys += PlayerOnAllowGrabbingBatflys;
 
         On.Player.Update += PlayerOnUpdate;
+        On.Player.checkInput += PlayerOncheckInput;
+        On.Player.UpdateBodyMode += PlayerOnUpdateBodyMode;
+        On.Player.UpdateAnimation += PlayerOnUpdateAnimation;
+        On.Player.MovementUpdate += PlayerOnMovementUpdate;
+        On.Player.Jump += PlayerOnJump;
 
         On.PlayerGraphics.ctor += PlayerGraphicsOnctor;
         On.PlayerGraphics.InitiateSprites += PlayerGraphicsOnInitiateSprites;
@@ -28,5 +31,14 @@ public static class Hooks
         On.PlayerGraphics.JollyUniqueColorMenu += PlayerGraphicsOnJollyUniqueColorMenu;
         On.JollyCoop.JollyMenu.SymbolButtonTogglePupButton.HasUniqueSprite += SymbolButtonTogglePupButtonOnHasUniqueSprite;
         On.JollyCoop.JollyMenu.JollyPlayerSelector.GetPupButtonOffName += JollyPlayerSelectorOnGetPupButtonOffName;
+
+        ApplyIL();
     }
+
+    private static void ApplyIL()
+    {
+        IL.Player.UpdateAnimation += PlayerILUpdateAnimation;
+    }
+
+   
 }

@@ -20,7 +20,7 @@ public partial class NoirCatto : BaseUnityPlugin
     public static NoirCattoOptions ModOptions;
     public static ManualLogSource LogSource;
 
-    public static bool RotundWorld;
+    public static bool ModRotundWorld;
 
     public NoirCatto()
     {
@@ -69,12 +69,12 @@ public partial class NoirCatto : BaseUnityPlugin
         {
             if (ModManager.ActiveMods.Any(x => x.id == "willowwisp.bellyplus"))
             {
-                RotundWorld = true;
+                ModRotundWorld = true;
                 Logger.LogInfo("Rotund World detected! Noir gonna be chonky...");
             }
             else
             {
-                RotundWorld = false;
+                ModRotundWorld = false;
             }
             
             if (!_isPostInit)
