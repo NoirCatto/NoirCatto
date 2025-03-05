@@ -43,6 +43,10 @@ public static class Hooks
         On.RainWorld.Update += RainWorldOnUpdate;
         On.SaveState.setDenPosition += SaveStateOnsetDenPosition;
         On.RainWorldGame.ctor += RainWorldGameOnctor;
+        On.RegionGate.customOEGateRequirements += RegionGateOncustomOEGateRequirements;
+
+        On.SSOracleBehavior.PebblesConversation.AddEvents += PebblesConversationOnAddEvents;
+        On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversationOnAddEvents;
 
         On.AbstractPhysicalObject.Realize += AbstractObjectType.AbstractPhysicalObjectOnRealize;
         On.AbstractPhysicalObject.Abstractize += AbstractPhysicalObjectOnAbstractize;
@@ -59,6 +63,9 @@ public static class Hooks
         IL.Weapon.Update += WeaponILUpdate;
         IL.SharedPhysics.TraceProjectileAgainstBodyChunks += SharedPhysicsILTraceProjectileAgainstBodyChunks;
         IL.Spear.Update += Fixes.SpearILUpdate;
+
+        IL.SSOracleBehavior.Update += SSOracleBehaviorOnUpdate;
+        IL.SSOracleBehavior.SeePlayer += SSOracleBehaviorILSeePlayer;
     }
 
    
