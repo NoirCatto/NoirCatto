@@ -1,3 +1,5 @@
+using NoirCatto.HuntThings;
+
 namespace NoirCatto;
 using static NoirCatto;
 
@@ -70,8 +72,17 @@ public static class Hooks
         //CustomSaveData
         On.PlayerProgression.ClearOutSaveStateFromMemory += SaveThings.CustomSaveData.PlayerProgressionOnClearOutSaveStateFromMemory;
         On.PlayerProgression.WipeSaveState += SaveThings.CustomSaveData.PlayerProgressionOnWipeSaveState;
+        On.StoryGameSession.ctor += SaveThings.CustomSaveData.StoryGameSessionOnctor;
         On.RainWorldGame.Win += SaveThings.CustomSaveData.RainWorldGameOnWin;
-        //On.StoryGameSession.ctor += SaveThings.CustomSaveData.StoryGameSessionOnctor;
+
+
+        //HuntQuest
+        On.Menu.KarmaLadder.ctor += HuntQuestThings.KarmaLadderOnctor;
+        On.Menu.KarmaLadderScreen.Singal += HuntQuestThings.KarmaLadderScreenOnSingal;
+        On.PlayerSessionRecord.AddEat += HuntQuestThings.PlayerSessionRecordOnAddEat;
+        On.ProcessManager.RequestMainProcessSwitch_ProcessID += HuntQuestThings.ProcessManagerOnRequestMainProcessSwitch_ProcessID;
+        On.Creature.Die += HuntQuestThings.CreatureOnDie;
+        On.HUD.HUD.InitSinglePlayerHud += HuntQuestThings.HUDOnInitSinglePlayerHud;
 
         ApplyIL();
     }

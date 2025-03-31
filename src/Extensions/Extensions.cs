@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MoreSlugcats;
+using UnityEngine;
 
 namespace NoirCatto;
 
@@ -33,6 +34,18 @@ public static partial class Extensions
     }
     public static bool IsSmallerThanMe(this Player self, Creature crit) => crit.Template.smallCreature || self.TotalMass > crit.TotalMass;
     public static bool IsSmallerThanMe(this Creature self, Creature crit) => self.TotalMass > crit.TotalMass;
+    #endregion
+
+    #region Custom values extensions
+    public static float MaxValue(this Vector2 vector)
+    {
+        return Mathf.Max(vector.x, vector.y);
+    }
+    public static float MinValue(this Vector2 vector)
+    {
+        return Mathf.Min(vector.x, vector.y);
+    }
+
     #endregion
 
     #region Built-in values extensions
