@@ -4,6 +4,7 @@ using System.Linq;
 using CT = CreatureTemplate.Type;
 using static CreatureTemplate.Type;
 using static MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType;
+using static DLCSharedEnums.CreatureTemplateType;
 using static NoirCatto.HuntThings.HuntQuestThings.HuntQuest;
 
 namespace NoirCatto.HuntThings;

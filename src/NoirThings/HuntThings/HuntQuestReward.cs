@@ -1,3 +1,4 @@
+using Menu;
 using RWCustom;
 using UnityEngine;
 
@@ -45,12 +46,12 @@ public partial class HuntQuestThings //BUG: Visiting echo won't give karma
             orig(self, sender, message);
     }
 
-    public static void KarmaLadderOnctor(On.Menu.KarmaLadder.orig_ctor orig, Menu.KarmaLadder self, Menu.Menu menu, Menu.MenuObject owner, Vector2 pos, HUD.HUD hud, IntVector2 displaykarma, bool reinforced)
+    public static void KarmaLadderOnctor_Menu_MenuObject_Vector2_HUD_IntVector2_bool(On.Menu.KarmaLadder.orig_ctor_Menu_MenuObject_Vector2_HUD_IntVector2_bool orig, Menu.KarmaLadder self, Menu.Menu menu, MenuObject owner, Vector2 pos, HUD.HUD hud, IntVector2 displayKarma, bool reinforced)
     {
         if (Master != null && Master.NextRewardPhase == RewardPhase.SleepScreen)
         {
-            displaykarma.x = displaykarma.y - 1;
+            displayKarma.x = displayKarma.y - 1;
         }
-        orig(self, menu, owner, pos, hud, displaykarma, reinforced);
+        orig(self, menu, owner, pos, hud, displayKarma, reinforced);
     }
 }

@@ -4,11 +4,11 @@ namespace NoirCatto.SaveThings;
 
 public partial class CustomSaveData
 {
-    public static void RainWorldGameOnWin(On.RainWorldGame.orig_Win orig, RainWorldGame self, bool malnourished)
+    public static void RainWorldGameOnWin(On.RainWorldGame.orig_Win orig, RainWorldGame self, bool malnourished, bool fromWarpPoint)
     {
         if (self.manager.upcomingProcess != null)
         {
-            orig(self, malnourished);
+            orig(self, malnourished, fromWarpPoint);
             return;
         }
 
@@ -19,7 +19,7 @@ public partial class CustomSaveData
                 self.GetStorySession.saveState.deathPersistentSaveData.karmaCap++;
             flag = true;
         }
-        orig(self, malnourished); //Save after orig so malnourished is fetched properly
+        orig(self, malnourished, fromWarpPoint); //Save after orig so malnourished is fetched properly
         if (flag) HuntQuestThings.Master.SaveQuestProgress();
     }
 

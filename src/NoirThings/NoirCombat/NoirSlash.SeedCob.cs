@@ -59,7 +59,7 @@ public partial class NoirCatto
 
             //for (var i = 0; i < 2; i++) //Spawn seeds
             {
-                var absSeed = new AbstractConsumable(seedCob.room.world, MoreSlugcats.MoreSlugcatsEnums.AbstractObjectType.Seed, null,
+                var absSeed = new AbstractConsumable(seedCob.room.world, DLCSharedEnums.AbstractObjectType.Seed, null,
                     seedCob.room.GetWorldCoordinate(seedCob.placedPos), seedCob.room.game.GetNewID(), -1, -1, null);
                 seedCob.room.abstractRoom.AddEntity(absSeed);
                 absSeed.RealizeInRoom();

@@ -77,7 +77,7 @@ public static class Hooks
 
 
         //HuntQuest
-        On.Menu.KarmaLadder.ctor += HuntQuestThings.KarmaLadderOnctor;
+        On.Menu.KarmaLadder.ctor_Menu_MenuObject_Vector2_HUD_IntVector2_bool += HuntQuestThings.KarmaLadderOnctor_Menu_MenuObject_Vector2_HUD_IntVector2_bool;
         On.Menu.KarmaLadderScreen.Singal += HuntQuestThings.KarmaLadderScreenOnSingal;
         On.PlayerSessionRecord.AddEat += HuntQuestThings.PlayerSessionRecordOnAddEat;
         On.ProcessManager.RequestMainProcessSwitch_ProcessID += HuntQuestThings.ProcessManagerOnRequestMainProcessSwitch_ProcessID;
@@ -98,6 +98,4 @@ public static class Hooks
         IL.SSOracleBehavior.Update += SSOracleBehaviorOnUpdate;
         IL.SSOracleBehavior.SeePlayer += SSOracleBehaviorILSeePlayer;
     }
-
-   
 }

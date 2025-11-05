@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using static MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType;
+using static DLCSharedEnums.CreatureTemplateType;
 
 namespace NoirCatto.HuntThings;
 
