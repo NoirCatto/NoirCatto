@@ -45,16 +45,14 @@ public partial class NoirCatto : BaseUnityPlugin
     private void RainWorldOnOnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
         orig(self);
+        if (_isInit) return;
         try
         {
-            if (_isInit) return;
-
+            _isInit = true;
             Hooks.Apply();
             LoadAtlases();
             LoadSounds();
-            
             MachineConnector.SetRegisteredOI("NoirCatto.NoirCatto", ModOptions);
-            _isInit = true;
         }
         catch (Exception ex)
         {
@@ -66,8 +64,13 @@ public partial class NoirCatto : BaseUnityPlugin
     private void RainWorldOnPostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
     {
         orig(self);
+        if (_isPostInit) return;
+
         try
         {
+            _isPostInit = true;
+            NoirNameFix.Apply();
+
             if (ModManager.ActiveMods.Any(x => x.id == "willowwisp.bellyplus"))
             {
                 ModRotundWorld = true;
@@ -82,8 +85,6 @@ public partial class NoirCatto : BaseUnityPlugin
             {
                 //NoirBase = SlugBaseCharacter.Get(NoirName);
             }
-
-            _isPostInit = true;
         }
         catch (Exception ex)
         {
