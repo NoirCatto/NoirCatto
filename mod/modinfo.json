@@ -6,6 +6,6 @@
   "description": "Noir - a quadrupedal, carnivorous slug who's based around melee combat!",
   "requirements": ["slime-cubed.slugbase"],
   "requirements_names": ["SlugBase"],
-  "tags": ["Campaigns"],
+  "tags": ["Campaigns, Custom Slugcat"],
   "checksum_override_version": true
 }
