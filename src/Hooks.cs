@@ -84,6 +84,9 @@ public static class Hooks
         On.Creature.Die += HuntQuestThings.CreatureOnDie;
         On.HUD.HUD.InitSinglePlayerHud += HuntQuestThings.HUDOnInitSinglePlayerHud;
 
+        //Creatures
+        On.StaticWorld.InitStaticWorld += MakeCreaturesEdible.StaticWorldOnInitStaticWorld;
+
         ApplyIL();
     }
 

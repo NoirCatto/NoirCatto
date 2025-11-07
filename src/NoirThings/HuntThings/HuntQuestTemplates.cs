@@ -88,7 +88,7 @@ public partial class HuntQuestThings
             [HuntQuest.HuntEggBug],
             [CT.SmallNeedleWorm],
             //[CT.LanternMouse], //Nonexistent in SI
-            //TODO BATFLIES!!!
+            [CT.Fly, CT.Fly, CT.Fly]
         ];
 
         /// Karma 2, Progression to Karma 3
@@ -190,11 +190,13 @@ public partial class HuntQuestThings
         public static readonly List<CT[]> Karma9CreatureFixedList =
         [
             [RedLizard],
+            [CT.Deer],
         ];
         public static readonly List<CT[]> Karma9CreatureFixedListDlc =
         [
             [RedLizard],
-            [MirosVulture]
+            [CT.Deer],
+            //[MirosVulture] //Doesn't appear in our worldstate
         ];
         
         /// Karma 9, Progression to Karma 10
@@ -203,7 +205,6 @@ public partial class HuntQuestThings
             [CT.DaddyLongLegs],
             [CT.MirosBird, CT.MirosBird],
             [CT.BigEel],
-            [CT.Deer],
             [RedLizard, CyanLizard, WhiteLizard, BlackLizard, GreenLizard, PinkLizard, YellowLizard, BlueLizard, Salamander]
         ];
         public static readonly List<CT[]> Karma10CreatureFixedListDlc =
@@ -211,7 +212,6 @@ public partial class HuntQuestThings
             [CT.DaddyLongLegs],
             [CT.MirosBird, CT.MirosBird],
             [CT.BigEel],
-            [CT.Deer],
             [RedLizard, CyanLizard, WhiteLizard, BlackLizard, GreenLizard, PinkLizard, YellowLizard, BlueLizard, Salamander, EelLizard, SpitLizard, ZoopLizard]
         ];
     }

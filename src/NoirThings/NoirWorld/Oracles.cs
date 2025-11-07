@@ -138,7 +138,7 @@ public partial class NoirCatto
                          "I... CAN'T speak to you... because... you ate...me...", 60, 0);
                     return;
                 case 5:
-                    Say("Hello little <PlayerName>.");
+                    Say("Hello <PlayerName>.");
                     Say("What are you? If I had my memories I would know...");
                     if (self.State.playerEncounters > 0 && self.State.playerEncountersWithMark == 0)
                     {
