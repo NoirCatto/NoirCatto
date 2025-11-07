@@ -31,6 +31,31 @@ public static partial class Extensions
         public float? Contribution;
     }
 
+    public static IList<WeightedItem<T>> DeepClone<T>(this IList<WeightedItem<T>> inputList)
+    {
+        return inputList
+            .Select(x => new WeightedItem<T>
+            {
+                Item = x.Item,
+                Weight = x.Weight,
+                Limit = x.Limit,
+                Contribution = x.Contribution
+            })
+            .ToList();
+    }
+
+    public static string AsString<T>(this IList<WeightedItem<T>> list)
+    {
+        var result = "";
+        for (var i = 0; i < list.Count; i++)
+        {
+            var item = list[i];
+            if (i > 0) result += ", ";
+            result += item.Item.ToString();
+        }
+        return result;
+    }
+
     /// <summary>
     /// Generates a list of random elements sourced from the input list parameter "entries"
     /// </summary>
@@ -55,20 +80,13 @@ public static partial class Extensions
         var maxPossibleCount = inputList.Sum(item => item.Limit);
         if (count > maxPossibleCount)
         {
-            NoirCatto.LogSource.LogError($"GenerateRandomList(): given a count that is higher than is possible using the supplied list! Count: {count}, Max Possible: {maxPossibleCount}, Clamping output to {maxPossibleCount} nodes!");
+            NoirCatto.LogSource.LogInfo($"GenerateRandomList(): given a count that is higher than is possible using the supplied list! Count: {count}, Max Possible: {maxPossibleCount}, Clamping output to {maxPossibleCount} nodes!");
+            NoirCatto.LogSource.LogInfo(inputList.AsString());
             count = maxPossibleCount;
         }
 
-        // Make a deep copy of inputList (please tell me if an easier way exists to do this)
-        List<WeightedItem<T>> entries = inputList
-            .Select(x => new WeightedItem<T>
-            {
-                Item = x.Item,
-                Weight = x.Weight,
-                Limit = x.Limit,
-                Contribution = x.Contribution
-            })
-            .ToList();
+        // Make a deep copy of inputList
+        var entries = inputList.DeepClone();
 
         // create the initial total weight, Add together all weights, taking into consideration the limit of each item
         var totalWeight = entries.Sum(item => item.Weight * item.Limit);

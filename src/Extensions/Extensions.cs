@@ -70,6 +70,11 @@ public static partial class Extensions
         foreach (var element in list)
             if (set.Contains(element)) set.Remove(element);
     }
+    public static void RemoveRange<T>(this ICollection<T> set, IEnumerable<T> list)
+    {
+        foreach (var element in list)
+            if (set.Contains(element)) set.Remove(element);
+    }
     #endregion
     
     #region Reflection //Heavy operations involving the use of System.Reflection
