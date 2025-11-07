@@ -4,6 +4,8 @@ public partial class NoirCatto
 {
     public static void SlugcatStatsOnctor(On.SlugcatStats.orig_ctor orig, SlugcatStats self, SlugcatStats.Name slugcat, bool malnourished)
     {
+        orig(self, slugcat, malnourished);
+
         if (slugcat == Const.NoirName)
         {
             self.generalVisibilityBonus = -0.2f;
@@ -15,7 +17,7 @@ public partial class NoirCatto
 
             self.runspeedFac = 0.8f;
             self.poleClimbSpeedFac = 1.4f;
-            self.corridorClimbSpeedFac = 2f;
+            self.corridorClimbSpeedFac = 1.4f;
 
             self.foodToHibernate = 5;
             self.maxFood = 7;
