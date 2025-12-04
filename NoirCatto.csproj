@@ -19,7 +19,7 @@
       <HintPath>..\REFERENCES\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BellyPlus">
-      <HintPath>..\REFERENCES CUSTOM\BellyPlus LINK.dll</HintPath>
+      <HintPath>..\REFERENCES CUSTOM\BellyPlus.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\REFERENCES\BepInEx.dll</HintPath>
