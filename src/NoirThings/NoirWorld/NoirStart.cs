@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NoirCatto;
 
-public partial class NoirCatto //TODO: Disable for Meadow
+public partial class NoirCatto
 {
     public class NoirStart : UpdatableAndDeletable
     {
