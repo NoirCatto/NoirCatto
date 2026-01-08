@@ -15,12 +15,14 @@ namespace NoirCatto;
 
 [BepInPlugin(Const.MOD_ID, "NoirCatto", Const.MOD_VERSION)]
 [BepInDependency("slime-cubed.slugbase")]
+[BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
 public partial class NoirCatto : BaseUnityPlugin
 {
     public static NoirCattoOptions ModOptions;
     public static ManualLogSource LogSource;
 
     public static bool ModRotundWorld;
+    public static bool ModRainMeadow;
 
     public NoirCatto()
     {
@@ -64,7 +66,6 @@ public partial class NoirCatto : BaseUnityPlugin
     private void RainWorldOnPostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
     {
         orig(self);
-        if (_isPostInit) return;
 
         try
         {
@@ -80,6 +81,7 @@ public partial class NoirCatto : BaseUnityPlugin
             {
                 ModRotundWorld = false;
             }
+            ModRainMeadow = ModManager.ActiveMods.Any(x => x.id == "henpemaz_rainmeadow");
             
             if (!_isPostInit)
             {

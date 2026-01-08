@@ -78,9 +78,15 @@ public partial class NoirCatto
         {
             if (Input.GetKeyDown(ModOptions.NoirMeowKey.Value))
             {
-                noirData.Cat.room?.PlaySound(MeowSND, noirData.Cat.firstChunk, false, 1f, noirData.MeowPitch);
-                if (ModOptions.NoirAttractiveMeow.Value) noirData.Cat.room?.InGameNoise(new InGameNoise(noirData.Cat.firstChunk.pos, 600f, noirData.Cat, 1f));
+                DoMeow(noirData.Cat, noirData.MeowPitch, ModOptions.NoirAttractiveMeow.Value);
+                if (MeadowThings.IsOnline) MeadowThings.RpcSend_DoMeow(noirData, ModOptions.NoirAttractiveMeow.Value);
             }
         }
+    }
+    
+    public static void DoMeow(Creature meower, float meowPitch, bool attractiveMeow)
+    {
+        meower.room?.PlaySound(MeowSND, meower.firstChunk, false, 1f, meowPitch);
+        if (attractiveMeow) meower.room?.InGameNoise(new InGameNoise(meower.firstChunk.pos, 600f, meower, 1f));
     }
 }

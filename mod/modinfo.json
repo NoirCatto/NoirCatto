@@ -1,11 +1,11 @@
 {
   "id": "NoirCatto.NoirCatto",
   "name": "NoirCatto",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "authors": "NoirCatto",
   "description": "Noir - a quadrupedal, carnivorous slug who's based around melee combat!",
   "requirements": ["slime-cubed.slugbase"],
   "requirements_names": ["SlugBase"],
-  "tags": ["Campaigns, Custom Slugcat"],
+  "tags": ["Campaigns", "Custom Slugcat"],
   "checksum_override_version": true
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NoirCatto.HuntThings;
 
-public partial class HuntQuestThings //BUG: Visiting echo won't give karma
+public partial class HuntQuestThings //BUG: Visiting echo won't give karma //but only on karma 5 -> 6 ??
 {
     public enum RewardPhase
     {
