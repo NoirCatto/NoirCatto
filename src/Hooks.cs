@@ -88,6 +88,7 @@ public static class Hooks
         On.StaticWorld.InitStaticWorld += MakeCreaturesEdible.StaticWorldOnInitStaticWorld;
 
         ApplyIL();
+        ApplyMeadow();
     }
 
     private static void ApplyIL()

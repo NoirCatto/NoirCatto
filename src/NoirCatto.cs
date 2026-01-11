@@ -51,6 +51,7 @@ public partial class NoirCatto : BaseUnityPlugin
         try
         {
             _isInit = true;
+            AbstractObjectType.InitStaticEnums();
             Hooks.Apply();
             LoadAtlases();
             LoadSounds();

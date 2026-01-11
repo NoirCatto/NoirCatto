@@ -53,6 +53,7 @@ public partial class NoirCatto
         var self = noirData.Cat;
 
         if (!noirData.CanSlash) return;
+        if (MeadowThings.IsMeadowOnline && !MeadowThings.IsOnlineObjectMine(noirData.AbstractCat)) return; //prevent double spawned slash
         var hand = HandToSlash(noirData);
 
         if (self.animation == Player.AnimationIndex.Flip)

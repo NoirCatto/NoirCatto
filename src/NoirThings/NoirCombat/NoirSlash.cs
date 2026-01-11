@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RainMeadow;
 using RWCustom;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,7 +10,7 @@ namespace NoirCatto;
 
 public partial class NoirCatto
 {
-    public enum SlashType
+    public enum SlashType : byte
     {
         Default,
         AirSlash,
@@ -18,9 +19,9 @@ public partial class NoirCatto
 
     public class AbstractCatSlash : AbstractPhysicalObject
     {
-        public readonly Player Owner;
-        public readonly SlashType SlashType;
-        public readonly int HandUsed;
+        public Player Owner;
+        public SlashType SlashType;
+        public int HandUsed;
 
         public AbstractCatSlash(World world, AbstractObjectType type, PhysicalObject realizedObject, WorldCoordinate pos, EntityID ID, Player owner, int handUsed, SlashType slashType = SlashType.Default) : base(world, type, realizedObject, pos, ID)
         {
@@ -40,7 +41,7 @@ public partial class NoirCatto
         public readonly int HandUsed;
         private readonly NoirData noirData;
 
-        public readonly int Direction;
+        public int Direction;
         private int MaxLifetime = 40;
         private int lifeTime;
         private float Radius = 30f;
@@ -61,6 +62,8 @@ public partial class NoirCatto
             HandUsed = handUsed;
             owner.TryGetNoirData(out noirData);
             Direction = owner.flipDirection;
+            if (MeadowThings.IsMeadowOnline) 
+                GetOnlineDirection();
 
             bodyChunks = [new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f)];
             bodyChunkConnections = [];
@@ -73,7 +76,6 @@ public partial class NoirCatto
             buoyancy = 0f;
             exitThrownModeSpeed = float.MinValue;
             rotation = Vector2.zero;
-            Direction = Owner.flipDirection;
             tailPos = firstChunk.pos;
             firstChunk.loudness = 9f;
             soundLoop = new ChunkDynamicSoundLoop(firstChunk);
@@ -115,6 +117,13 @@ public partial class NoirCatto
             firstChunk.vel = Custom.RotateAroundOrigo(firstChunk.vel, startingAngle * Direction);
         }
 
+        private void GetOnlineDirection()
+        {
+            var onlineCatSlash = (OnlineCatSlash)this.abstractPhysicalObject.GetOnlineObject();
+            if (onlineCatSlash == null || onlineCatSlash.isMine) return;
+            Direction = onlineCatSlash.Direction;
+        }
+
         private Vector2 GetSpawnPosition()
         {
             return Owner.firstChunk.pos + Custom.RotateAroundOrigo(new Vector2(Radius * Direction, 0f), (-90f + startingAngle) * Direction);
@@ -134,6 +143,8 @@ public partial class NoirCatto
             lifeTime++;
             if (lifeTime >= MaxLifetime)
             {
+                if (MeadowThings.IsMeadowOnline && abstractPhysicalObject.GetOnlineObject(out var oe))
+                    oe.beingMoved = true;
                 Destroy();
                 return;
             }
@@ -162,6 +173,8 @@ public partial class NoirCatto
             traveledAngle += ang;
             if (traveledAngle >= targetAngle)
             {
+                if (MeadowThings.IsMeadowOnline && abstractPhysicalObject.GetOnlineObject(out var oe))
+                    oe.beingMoved = true;
                 Destroy();
             }
         }

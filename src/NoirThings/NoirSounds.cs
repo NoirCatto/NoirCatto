@@ -17,6 +17,8 @@ public partial class NoirCatto
     public static SoundID Meow5SND;
     public static SoundID MeowFrustratedSND;
     public static SoundID PurrLoopSND;
+    public static SoundID[] MeowSNDs;
+
     public static void LoadSounds()
     {
         SlashSND = new SoundID("NoirCatto_Slash", true);
@@ -28,6 +30,7 @@ public partial class NoirCatto
         Meow5SND = new SoundID("NoirCatto_Meow5", true);
         MeowFrustratedSND = new SoundID("NoirCatto_MeowFrustrated", true);
         PurrLoopSND = new SoundID("NoirCatto_PurrLoop", true);
+        MeowSNDs = [Meow1SND, Meow2SND, Meow3SND, Meow4SND, Meow5SND];
     }
 
     #region Sleep-Screen Purr
@@ -78,15 +81,21 @@ public partial class NoirCatto
         {
             if (Input.GetKeyDown(ModOptions.NoirMeowKey.Value))
             {
-                DoMeow(noirData.Cat, noirData.MeowPitch, ModOptions.NoirAttractiveMeow.Value);
-                if (MeadowThings.IsOnline) MeadowThings.RpcSend_DoMeow(noirData, ModOptions.NoirAttractiveMeow.Value);
+                var sndId = (byte)UnityEngine.Random.Range(0, MeowSNDs.Length);
+                var sndIdAndAttrMeow = (byte)((byte)(sndId << 1) + Convert.ToByte(ModOptions.NoirAttractiveMeow.Value));
+                
+                DoMeow(noirData.Cat, noirData.MeowPitch, sndIdAndAttrMeow);
+                if (MeadowThings.IsOnline) MeadowThings.RpcSend_DoMeow(noirData, sndIdAndAttrMeow);
             }
         }
     }
     
-    public static void DoMeow(Creature meower, float meowPitch, bool attractiveMeow)
+    public static void DoMeow(Creature meower, float meowPitch, byte sndIdAndAttrMeow)
     {
-        meower.room?.PlaySound(MeowSND, meower.firstChunk, false, 1f, meowPitch);
-        if (attractiveMeow) meower.room?.InGameNoise(new InGameNoise(meower.firstChunk.pos, 600f, meower, 1f));
+        var attractiveMeow = sndIdAndAttrMeow % 2;
+        var sndId = sndIdAndAttrMeow >> 1;
+        
+        meower.room?.PlaySound(MeowSNDs[sndId], meower.firstChunk, false, 1f, meowPitch);
+        if (attractiveMeow == 1) meower.room?.InGameNoise(new InGameNoise(meower.firstChunk.pos, 600f, meower, 1f));
     }
 }
