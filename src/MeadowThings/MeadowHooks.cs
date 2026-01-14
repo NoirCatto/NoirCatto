@@ -5,9 +5,9 @@ using RainMeadow;
 
 namespace NoirCatto;
 
-public partial class NoirCatto
+public class MeadowHooks
 {
-    public static void ApplyMeadow()
+    public static void Apply()
     {
         try
         {
@@ -18,13 +18,13 @@ public partial class NoirCatto
         }
         catch (Exception ex)
         {
-            LogSource.LogError(ex);
+            NoirCatto.LogSource.LogError(ex);
         }
     }
 
-    public static OnlinePhysicalObject OnNewFromApo(Func<AbstractPhysicalObject, OnlinePhysicalObject> orig, AbstractPhysicalObject apo)
+    public static object OnNewFromApo(Func<AbstractPhysicalObject, object> orig, AbstractPhysicalObject apo) //Using generic 'object' in place of 'OnlinePhysicalObject' as otherwise it prevents the game from loading without Meadow on
     {
-        if (apo is AbstractCatSlash slash)
+        if (apo is NoirCatto.AbstractCatSlash slash)
         {
             OnlineEntity.EntityId entityId = new OnlineEntity.EntityId(OnlineManager.mePlayer.inLobbyId, OnlineEntity.EntityId.IdType.apo, slash.ID.number);
             if (OnlineManager.recentEntities.ContainsKey(entityId))

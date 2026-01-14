@@ -84,7 +84,8 @@ public partial class NoirCatto : BaseUnityPlugin
             if (!_isPostInit)
             {
                 NoirNameFix.Apply();
-                //NoirBase = SlugBaseCharacter.Get(NoirName);
+                if (ModRainMeadow)
+                    MeadowHooks.Apply();
             }
             _isPostInit = true;
         }
