@@ -85,7 +85,7 @@ public partial class NoirCatto
                 var sndIdAndAttrMeow = (byte)((byte)(sndId << 1) + Convert.ToByte(ModOptions.NoirAttractiveMeow.Value));
                 
                 DoMeow(noirData.Cat, noirData.MeowPitch, sndIdAndAttrMeow);
-                if (MeadowThings.IsOnline) MeadowThings.RpcSend_DoMeow(noirData, sndIdAndAttrMeow);
+                if (MeadowThings.IsMeadowOnline) MeadowThings.RpcSend_DoMeow(noirData, sndIdAndAttrMeow);
             }
         }
     }

@@ -143,8 +143,8 @@ public partial class NoirCatto
             lifeTime++;
             if (lifeTime >= MaxLifetime)
             {
-                if (MeadowThings.IsMeadowOnline && abstractPhysicalObject.GetOnlineObject(out var oe))
-                    oe.beingMoved = true;
+                if (MeadowThings.IsMeadowOnline)
+                    OnlineSetAsBeingMoved();
                 Destroy();
                 return;
             }
@@ -161,6 +161,7 @@ public partial class NoirCatto
 
             soundLoop.sound = SoundID.None;
         }
+
         private void RotationUpdate()
         {
             if (mode == Mode.Free) return;
@@ -173,11 +174,12 @@ public partial class NoirCatto
             traveledAngle += ang;
             if (traveledAngle >= targetAngle)
             {
-                if (MeadowThings.IsMeadowOnline && abstractPhysicalObject.GetOnlineObject(out var oe))
-                    oe.beingMoved = true;
+                if (MeadowThings.IsMeadowOnline)
+                    OnlineSetAsBeingMoved();
                 Destroy();
             }
         }
+        
         private void AirSlashUpdate()
         {
             if (SlashType is SlashType.AirSlash or SlashType.AirSlash2)
@@ -246,7 +248,9 @@ public partial class NoirCatto
             }
 
             if (StuffHit.Contains(result.obj)) return false;
-
+            
+            if (MeadowThings.IsMeadowOnline)
+                OnlineHitSomethingReceive(result, eu);
 
             if (result.obj is SeedCob seedCob) HitCob(seedCob);
 
@@ -254,7 +258,8 @@ public partial class NoirCatto
             {
                 if (crit == Owner) return false;
                 if (((ModManager.CoopAvailable && !Custom.rainWorld.options.friendlyFire) ||
-                     room.game.IsArenaSession && !room.game.GetArenaGameSession.arenaSitting.gameTypeSetup.spearsHitPlayers) &&
+                     room.game.IsArenaSession && !room.game.GetArenaGameSession.arenaSitting.gameTypeSetup.spearsHitPlayers ||
+                     !MeadowThings.IsFriendlyFire) &&
                     crit is Player) return false;
                 if (crit is TubeWorm or JetFish && crit.grabbedBy.Any(x => x.grabber == Owner)) return false; //todo Add tamed lizards
 
@@ -315,6 +320,9 @@ public partial class NoirCatto
                 room.AddObject(new ExplosionSpikes(room, result.chunk.pos + Custom.DirVec(result.chunk.pos, result.collisionPoint) * result.chunk.rad, 5, 2f, 4f, 4.5f, 30f, new Color(1f, 1f, 1f, 0.5f)));
             }
 
+            if (MeadowThings.IsMeadowOnline)
+                OnlineHitSomethingSend(result, eu);
+            
             return true;
         }
 

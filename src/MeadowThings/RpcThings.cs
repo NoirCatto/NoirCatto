@@ -2,7 +2,7 @@ using RainMeadow;
 
 namespace NoirCatto;
 
-public static partial class MeadowThings
+internal static partial class MeadowThings
 {
     public static void RpcSend_DoMeow(NoirCatto.NoirData noirData, byte sndIdAndAttrMeow)
     {

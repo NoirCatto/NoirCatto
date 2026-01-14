@@ -81,6 +81,33 @@ public class OnlineCatSlash : OnlinePhysicalObject
     {
         return new OnlineCatSlashState(this, inResource, tick);
     }
+    
+    public new bool HittingRemotely { get; set; }
+    [RPCMethod]
+    public void CatSlashHitSomething(RealizedCatSlashState stateWhenHit, OnlineCollisionResult hit)
+    {
+        HittingRemotely = true;
+
+        if (this.apo.realizedObject != null) {
+            stateWhenHit.ReadTo(this);
+            SharedPhysics.CollisionResult? result = null;
+            hit.BuildCollisionResult(out result);
+            if (result.HasValue) {
+                OnlinePhysicalObject onlineResult = result.Value.obj.abstractPhysicalObject.GetOnlineObject();
+                if (OnlineManager.lobby != null && onlineResult != null && onlineResult.didParry)
+                {
+                    RainMeadow.RainMeadow.Debug("Parried!");
+                    OnlineManager.RunDeferred(() => onlineResult.didParry = false);
+                    HittingRemotely = false;
+                    return;
+                }
+                (this.apo.realizedObject as Weapon)!.HitSomething(result.Value, true);
+            }
+                
+        }
+            
+        HittingRemotely = false;
+    }
 
     public class OnlineCatSlashState : AbstractPhysicalObjectState
     {

@@ -55,7 +55,7 @@ public partial class NoirCatto : BaseUnityPlugin
             Hooks.Apply();
             LoadAtlases();
             LoadSounds();
-            MachineConnector.SetRegisteredOI("NoirCatto.NoirCatto", ModOptions);
+            MachineConnector.SetRegisteredOI(Const.MOD_ID, ModOptions);
         }
         catch (Exception ex)
         {
@@ -70,9 +70,6 @@ public partial class NoirCatto : BaseUnityPlugin
 
         try
         {
-            _isPostInit = true;
-            NoirNameFix.Apply();
-
             if (ModManager.ActiveMods.Any(x => x.id == "willowwisp.bellyplus"))
             {
                 ModRotundWorld = true;
@@ -86,8 +83,10 @@ public partial class NoirCatto : BaseUnityPlugin
             
             if (!_isPostInit)
             {
+                NoirNameFix.Apply();
                 //NoirBase = SlugBaseCharacter.Get(NoirName);
             }
+            _isPostInit = true;
         }
         catch (Exception ex)
         {

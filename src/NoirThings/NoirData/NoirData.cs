@@ -47,7 +47,7 @@ public partial class NoirCatto
         public bool GraspsAnyNull;
         public bool GraspsFirstNull;
 
-        public float MeowPitch = 1f;
+        public float MeowPitch = 1f; //todo Vary this by 5% randomly
         public const float DefaultFirstChunkMass = 0.315f;
 
         public int FlipDirection

@@ -1,3 +1,4 @@
 {
-  "sync_required_mods": ["NoirCatto.NoirCatto", "slime-cubed.slugbase"]
+  "sync_required_mods_override": ["NoirCatto.NoirCatto", "slime-cubed.slugbase"],
+  "banned_online_mods_override": ["NoirCatto.NoirCatto", "slime-cubed.slugbase"]
 }

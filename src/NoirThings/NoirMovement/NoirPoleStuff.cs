@@ -5,18 +5,23 @@ public partial class NoirCatto
     #region DirectlyToBeam
     private static void DirectlyToBeam1(NoirData noirData, out bool flag)
     {
+        flag = false;
         var self = noirData.Cat;
         var graphics = (PlayerGraphics)self.graphicsModule;
+        var room = self.room;
 
-        var anyPartOnVertBeam = (self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[0].pos)).verticalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[1].pos)).verticalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(graphics.hands[0].pos)).verticalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(graphics.hands[1].pos)).verticalBeam);
+        if (graphics == null || room == null)
+            return;
 
-        var anyPartOnHoriBeam = (self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[0].pos)).horizontalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(self.bodyChunks[1].pos)).horizontalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(graphics.hands[0].pos)).horizontalBeam ||
-                                 self.room.GetTile(self.room.GetTilePosition(graphics.hands[1].pos)).horizontalBeam);
+        var anyPartOnVertBeam = (room.GetTile(room.GetTilePosition(self.bodyChunks[0].pos)).verticalBeam ||
+                                 room.GetTile(room.GetTilePosition(self.bodyChunks[1].pos)).verticalBeam ||
+                                 room.GetTile(room.GetTilePosition(graphics.hands[0].pos)).verticalBeam ||
+                                 room.GetTile(room.GetTilePosition(graphics.hands[1].pos)).verticalBeam);
+
+        var anyPartOnHoriBeam = (room.GetTile(room.GetTilePosition(self.bodyChunks[0].pos)).horizontalBeam ||
+                                 room.GetTile(room.GetTilePosition(self.bodyChunks[1].pos)).horizontalBeam ||
+                                 room.GetTile(room.GetTilePosition(graphics.hands[0].pos)).horizontalBeam ||
+                                 room.GetTile(room.GetTilePosition(graphics.hands[1].pos)).horizontalBeam);
 
         if (!anyPartOnVertBeam &&
             (self.animation == Player.AnimationIndex.StandOnBeam || noirData.LastAnimation == Player.AnimationIndex.StandOnBeam ||
@@ -42,7 +47,6 @@ public partial class NoirCatto
                 }
             }
         }
-        flag = false;
     }
 
     private static void DirectlyToBeam2(NoirData noirData, bool flag)
