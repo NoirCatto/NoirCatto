@@ -5,7 +5,7 @@ using RainMeadow;
 
 namespace NoirCatto;
 
-public class MeadowHooks
+public static class MeadowHooks
 {
     public static void Apply()
     {
@@ -13,7 +13,7 @@ public class MeadowHooks
         {
             _ = new Hook(
                 typeof(OnlinePhysicalObject).GetMethod(nameof(OnlinePhysicalObject.NewFromApo), BindingFlags.Static | BindingFlags.Public),
-                typeof(NoirCatto).GetMethod(nameof(OnNewFromApo), BindingFlags.Static | BindingFlags.Public)
+                typeof(MeadowHooks).GetMethod(nameof(MeadowHooks.OnNewFromApo), BindingFlags.Static | BindingFlags.Public)
             );
         }
         catch (Exception ex)

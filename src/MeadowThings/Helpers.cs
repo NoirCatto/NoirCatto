@@ -22,4 +22,6 @@ internal static partial class MeadowThings
     /// NOTE: Check for meadow first
     /// </summary>
     public static bool IsFriendlyFire => IsStoryMode(out var storyMode) && storyMode.friendlyFire;
+
+    public static bool IsOnlineObjectNull(AbstractPhysicalObject abstractPhysicalObject) => abstractPhysicalObject.GetOnlineObject() == null;
 }

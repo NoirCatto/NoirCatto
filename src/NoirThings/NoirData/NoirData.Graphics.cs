@@ -25,6 +25,8 @@ public partial class NoirCatto
         public FAtlasElement ElementFromTexture(Texture2D texture, bool forceRedraw = false)
         {
             var name = texture.name + "_" + Cat.playerState.playerNumber;
+            if (MeadowThings.IsMeadowOnline) name = texture.name + "_" + MeadowThings.GetOnlineObjectId(AbstractCat);
+            
             if (forceRedraw)
             {
                 var oldAtlas = Futile.atlasManager._atlases.FirstOrDefault(x => x.name == name);

@@ -225,12 +225,20 @@ public partial class NoirCatto //Sprite replacement and layer management is here
             pawsColor = PlayerColor.GetCustomColor(self, CustomColorPaws);
             noseColor = PlayerColor.GetCustomColor(self, CustomColorNose);
         }
+        
         if (TryGetCustomJollyColor(playerNum, CustomColorEyes, out var customColorEye)) eyeColor = customColorEye;
         if (TryGetCustomJollyColor(playerNum, CustomColorBody, out var customColorBody)) bodyColor = customColorBody;
         if (TryGetCustomJollyColor(playerNum, CustomColorFluff, out var customColorFluff)) fluffColor = customColorFluff;
         if (TryGetCustomJollyColor(playerNum, CustomColorPaws, out var customColorPaws)) pawsColor = customColorPaws;
         if (TryGetCustomJollyColor(playerNum, CustomColorNose, out var customColorNose)) noseColor = customColorNose;
 
+        if (MeadowThings.IsMeadowOnline)
+        {
+            if (MeadowThings.IsOnlineObjectNull(self.player.abstractPhysicalObject))
+                return;
+            MeadowThings.GetMeadowColors(self, ref eyeColor, ref bodyColor, ref fluffColor, ref noseColor, ref pawsColor);
+        }
+        
         var recolorEyes = eyeColor != null && eyeColor.Value != NoirBlueEyesDefault;
         var recolorBlack = bodyColor != null && bodyColor.Value != NoirBlack;
         var recolorWhite = fluffColor != null && fluffColor.Value != NoirWhite;
@@ -408,11 +416,19 @@ public partial class NoirCatto //Sprite replacement and layer management is here
             pawsColor = PlayerColor.GetCustomColor(self, CustomColorPaws);
             noseColor = PlayerColor.GetCustomColor(self, CustomColorNose);
         }
+        
         if (TryGetCustomJollyColor(playerNum, CustomColorEyes, out var customColorEye)) eyeColor = customColorEye;
         if (TryGetCustomJollyColor(playerNum, CustomColorBody, out var customColorBody)) bodyColor = customColorBody;
         if (TryGetCustomJollyColor(playerNum, CustomColorFluff, out var customColorFluff)) fluffColor = customColorFluff;
         if (TryGetCustomJollyColor(playerNum, CustomColorPaws, out var customColorPaws)) pawsColor = customColorPaws;
         if (TryGetCustomJollyColor(playerNum, CustomColorNose, out var customColorNose)) noseColor = customColorNose;
+        
+        if (MeadowThings.IsMeadowOnline)
+        {
+            if (MeadowThings.IsOnlineObjectNull(self.player.abstractPhysicalObject))
+                return;
+            MeadowThings.GetMeadowColors(self, ref eyeColor, ref bodyColor, ref fluffColor, ref noseColor, ref pawsColor);
+        }
 
         if (StartsWithNoir(FaceSpr)) //For DMS compatibility
         {
@@ -487,12 +503,18 @@ public partial class NoirCatto //Sprite replacement and layer management is here
         void ApplyElement(int sprNum, string sprName)
         {
             var name = sprName + "_" + playerNum;
+            if (MeadowThings.IsMeadowOnline)
+                name = sprName + "_" + MeadowThings.GetOnlineObjectId(self.player.abstractPhysicalObject);
+            
             if (sleaser.sprites[sprNum].element.name != name)
                 sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(name);
         }
         void ApplyElement2(int sprNum)
         {
             var suffix = "_" + playerNum;
+            if (MeadowThings.IsMeadowOnline)
+                suffix = "_" + MeadowThings.GetOnlineObjectId(self.player.abstractPhysicalObject);
+            
             if (!sleaser.sprites[sprNum].element.name.EndsWith(suffix))
                 sleaser.sprites[sprNum].element = Futile.atlasManager.GetElementWithName(sleaser.sprites[sprNum].element.name + suffix);
         }
