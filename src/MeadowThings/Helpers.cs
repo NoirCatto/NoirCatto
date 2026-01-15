@@ -7,10 +7,10 @@ internal static partial class MeadowThings
 {
     public static bool IsMeadowOnline => NoirCatto.ModRainMeadow && IsOnline;
     public static bool IsOnline => OnlineManager.lobby != null;
+    public static bool IsLobbyMine => OnlineManager.lobby.isOwner;
 
     public static bool IsOnlineObjectMine(AbstractPhysicalObject abstractPhysicalObject) => abstractPhysicalObject.GetOnlineObject().isMine;
     
-    //NOTE: Check for meadow first for below methods
     public static bool IsStoryFriendlyFireDisabled => RainMeadow.RainMeadow.isStoryMode(out var storyMode) && !storyMode.friendlyFire;
     
     public static bool IsArenaHoldFire => RainMeadow.RainMeadow.isArenaMode(out var arenaMode) && arenaMode.countdownInitiatedHoldFire;

@@ -11,12 +11,10 @@ internal static partial class MeadowThings
     }
 
     [RPCMethod]
-    public static void Rpc_DoMeow(RPCEvent rpc, OnlineCreature onlineCreature, float meowPitch, byte sndIdAndAttrMeow)
+    private static void Rpc_DoMeow(RPCEvent rpc, OnlineCreature onlineCreature, float meowPitch, byte sndIdAndAttrMeow)
     {
         var meower = onlineCreature.realizedCreature;
         if (meower == null) return;
         NoirCatto.DoMeow(meower, meowPitch, sndIdAndAttrMeow);
     }
-
-
 }

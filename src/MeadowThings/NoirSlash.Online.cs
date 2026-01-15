@@ -58,7 +58,6 @@ public partial class NoirCatto
                 
                 if (!onlineHit.owner.isMe)
                 {
-                    LogSource.LogInfo($"SendOnlineHit");
                     onlineHit.owner.InvokeRPC(onlineCatSlash.CatSlashHitSomething, realizedState, new OnlinePhysicalObject.OnlineCollisionResult(
                         onlineHit.id, chunk, appendageRef, result.hitSomething, result.collisionPoint
                     ));

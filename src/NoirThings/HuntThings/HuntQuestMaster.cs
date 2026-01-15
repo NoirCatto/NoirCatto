@@ -26,10 +26,13 @@ public partial class HuntQuestThings
 
         public void LoadOrCreateQuests()
         {
+            if (MeadowThings.IsMeadowOnline && !MeadowThings.IsLobbyMine)
+                return; //We'll get quests from lobby owner
+            
             Quests.Clear();
             Completed = false;
             NextRewardPhase = RewardPhase.Normal;
-
+            
             var newQuests = new List<HuntQuest>();
 
             if (SaveThings.CustomSaveData.LoadStorySpecific(HUNTQUEST_DATA, out List<HuntQuest> loadedQuests, StorySession))
@@ -42,7 +45,10 @@ public partial class HuntQuestThings
                 if (karmaCap >= 9) return; //Max karma reached!
                 newQuests = HuntQuestTemplates.FromKarma(karmaCap);
             }
-
+            
+            if (MeadowThings.IsMeadowOnline && MeadowThings.IsLobbyMine)
+                MeadowThings.RpcSend_HuntQuests(newQuests);
+            
             foreach (var quest in newQuests)
                 Quests.Add(quest);
         }
@@ -61,7 +67,7 @@ public partial class HuntQuestThings
             NextRewardPhase = RewardPhase.IncreaseKarmaCap;
         }
         
-        private void TargetHunted(AbstractCreature target)
+        public void TargetHunted(AbstractCreature target)
         {
             _huntedCreatures.Add(new WeakReference(target));
             foreach (var quest in Quests.ToArray())
@@ -78,12 +84,25 @@ public partial class HuntQuestThings
             if (!crit.dead || crit.killTag != null && crit.killTag.creatureTemplate.type == CreatureTemplate.Type.Slugcat)
             {
                 if (!AlreadyHunted(crit.abstractCreature))
-                    TargetHunted(crit.abstractCreature);
+                {
+                    if (MeadowThings.IsMeadowOnline)
+                    {
+                        if (MeadowThings.IsLobbyMine)
+                        {
+                            TargetHunted(crit.abstractCreature);
+                            MeadowThings.RpcSend_TargetHunted(crit.abstractCreature);
+                        }
+                        else
+                            MeadowThings.RpcSend_TargetHuntedNotifyOwner(crit.abstractCreature);
+                    }
+                    else //Non-meadow
+                        TargetHunted(crit.abstractCreature);
+                }
             }
         }
 
         #region Helper methods
-        private bool AlreadyHunted(AbstractCreature abstractCreature)
+        public bool AlreadyHunted(AbstractCreature abstractCreature)
         {
             var huntedCreatures = new List<AbstractCreature>();
 
