@@ -47,7 +47,7 @@ public partial class NoirCatto
                 startRoom ??= player.Room.realizedRoom;
             }
             
-            if (ModOptions.NoirUseCustomStart.Value != CustomStartMode.Disabled && startRoom != null && !MeadowThings.IsMeadowOnline) //NoirStart breaks meadow sync. Maybe due to using a player controller?
+            if (ModOptions.NoirUseCustomStart.Value != CustomStartMode.Disabled && startRoom != null)
             {
                 startRoom.AddObject(new NoirStart());
             }

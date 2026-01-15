@@ -258,9 +258,16 @@ public partial class NoirCatto
             {
                 if (crit == Owner) return false;
                 if (((ModManager.CoopAvailable && !Custom.rainWorld.options.friendlyFire) ||
-                     room.game.IsArenaSession && !room.game.GetArenaGameSession.arenaSitting.gameTypeSetup.spearsHitPlayers ||
-                     (ModRainMeadow && !MeadowThings.IsFriendlyFire)) &&
+                     (room.game.IsArenaSession && !room.game.GetArenaGameSession.arenaSitting.gameTypeSetup.spearsHitPlayers) ||
+                     (MeadowThings.IsMeadowOnline && MeadowThings.IsStoryFriendlyFireDisabled)) &&
                     crit is Player) return false;
+
+                if (MeadowThings.IsMeadowOnline && 
+                        ((MeadowThings.IsStoryFriendlyFireDisabled && crit is Player) ||
+                        MeadowThings.IsArenaHoldFire ||
+                        MeadowThings.IsArenaTeammate(Owner, crit)))
+                    return false;
+                
                 if (crit is TubeWorm or JetFish && crit.grabbedBy.Any(x => x.grabber == Owner)) return false; //todo Add tamed lizards
 
                 var smallCrit = Owner.IsSmallerThanMe(crit);
