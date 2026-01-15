@@ -1,7 +1,7 @@
 {
   "id": "NoirCatto.NoirCatto",
   "name": "NoirCatto",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "authors": "NoirCatto",
   "description": "Noir - a quadrupedal, carnivorous slug who's based around melee combat!",
   "requirements": ["slime-cubed.slugbase"],
