@@ -62,6 +62,9 @@ public static class Hooks
         //Oracle
         On.SSOracleBehavior.PebblesConversation.AddEvents += PebblesConversationOnAddEvents;
         On.SLOracleBehaviorHasMark.MoonConversation.AddEvents += MoonConversationOnAddEvents;
+        
+        //Ghosts
+        On.SaveState.GhostEncounter += SaveStateOnGhostEncounter;
 
         //Objects
         On.AbstractPhysicalObject.Realize += AbstractObjectType.AbstractPhysicalObjectOnRealize;

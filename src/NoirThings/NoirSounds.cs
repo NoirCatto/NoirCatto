@@ -3,6 +3,7 @@ using System.Linq;
 using Noise;
 using RWCustom;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace NoirCatto;
 
@@ -81,7 +82,12 @@ public partial class NoirCatto
         {
             if (Input.GetKeyDown(ModOptions.NoirMeowKey.Value))
             {
-                var sndId = (byte)UnityEngine.Random.Range(0, MeowSNDs.Length);
+                noirData.BaseMeowPitch = Random.Range(0.95f, 1.05f) + (Mathf.Pow(noirData.MeowCounter, 2f) * 0.0005f);
+                noirData.MeowCounter += 1;
+                noirData.SinceLastMeowCounter = 40;
+                if (noirData.MeowCounter > 100) MeowSplode(noirData);
+                
+                var sndId = (byte)Random.Range(0, MeowSNDs.Length);
                 var sndIdAndAttrMeow = (byte)((byte)(sndId << 1) + Convert.ToByte(ModOptions.NoirAttractiveMeow.Value));
                 
                 DoMeow(noirData.Cat, noirData.MeowPitch, sndIdAndAttrMeow);
@@ -97,5 +103,36 @@ public partial class NoirCatto
         
         meower.room?.PlaySound(MeowSNDs[sndId], meower.firstChunk, false, 1f, meowPitch);
         if (attractiveMeow == 1) meower.room?.InGameNoise(new InGameNoise(meower.firstChunk.pos, 600f, meower, 1f));
+    }
+
+    public static void MeowSplode(NoirData noirData) //Whimsymaxxing
+    {
+        var room = noirData.Cat.room;
+        if (room == null) return;
+
+        var pos = noirData.Cat.firstChunk.pos;
+        const int explosionLifeTime = 6;
+        const float explosionRadius = 100f;
+        const float explosionForce = 1.2f;
+        const float explosionDamage = 0.5f;
+        const float explosionMinStun = 50f;
+        const float explosionStun = 100f;
+        var color = Color.white;
+        
+        room.AddObject(new Explosion(room, null, pos, explosionLifeTime, explosionRadius, explosionForce, explosionDamage, explosionStun, 0.10f, noirData.Cat, 1f, explosionMinStun, 1f));
+        room.AddObject(new Explosion.ExplosionLight(pos, 28f * explosionForce, 1f, explosionLifeTime + 1, color));
+        room.AddObject(new Explosion.ExplosionLight(pos, 23f * explosionForce, 1f, (int)(explosionLifeTime * 0.5f), color));
+        room.AddObject(new ExplosionSpikes(room, pos, (int)Random.Range(14f, 14 * explosionDamage), 30f, explosionLifeTime + 3, explosionForce - 2, 170f, color));
+        room.AddObject(new ShockWave(pos, 430f, 0.045f, explosionLifeTime - 2, false));
+        for (var j = 0; j < 20; j++)
+        {
+            var a = Custom.RNV();
+            room.AddObject(new Spark(pos + a * Random.value * 40f, a * Mathf.Lerp(4f, 30f, Random.value), color, null, 4, 18));
+        }
+
+        room.ScreenMovement(pos, default, 0.7f);
+
+        room.PlaySound(SoundID.Bomb_Explode, pos);
+        room.InGameNoise(new InGameNoise(pos, 4000f * explosionDamage, noirData.Cat, 1f));
     }
 }

@@ -47,7 +47,20 @@ public partial class NoirCatto
         public bool GraspsAnyNull;
         public bool GraspsFirstNull;
 
-        public float MeowPitch = 1f; //todo Vary this by 5% randomly
+        public int MeowCounter = 0;
+        public int SinceLastMeowCounter = 0;
+        public float BaseMeowPitch = 1f;
+        public float RotundMeowPitch = 0f;
+        public float MeowPitch
+        {
+            get
+            {
+                var pitch = BaseMeowPitch - RotundMeowPitch;
+                if (pitch < 0.15f) pitch = 0.15f;
+                return pitch;
+            }
+        }
+        
         public const float DefaultFirstChunkMass = 0.315f;
 
         public int FlipDirection
@@ -106,11 +119,12 @@ public partial class NoirCatto
 
             if (ModRotundWorld)
             {
-                MeowPitch = 1f - (Cat.bodyChunks[1].mass - DefaultFirstChunkMass) * 0.65f;
-                if (MeowPitch < 0.15f) MeowPitch = 0.15f;
+                RotundMeowPitch = (Cat.bodyChunks[1].mass - DefaultFirstChunkMass) * 0.65f;
             }
-
+            
             YinputForPoleBlocker.Tick();
+            SinceLastMeowCounter.Tick();
+            if (SinceLastMeowCounter == 0) MeowCounter = 0;
             lastBodyModeInternal = Cat.bodyMode;
             lastAnimationInternal = Cat.animation;
             GraspsAllNull = Cat.grasps.All(x => x is null);

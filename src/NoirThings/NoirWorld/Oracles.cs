@@ -260,6 +260,7 @@ public partial class NoirCatto
         {
             var c = new ILCursor(il);
             ILLabel label = null;
+            c.GotoNext(i => i.MatchLdsfld<MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName>("Artificer")); //Hello there, a new Arti check inside RainWorld code
             c.GotoNext(MoveType.After,
                 i => i.MatchCallOrCallvirt<RainWorldGame>("get_StoryCharacter"),
                 i => i.MatchLdsfld<MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName>("Artificer"),
