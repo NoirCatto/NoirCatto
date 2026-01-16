@@ -12,7 +12,7 @@ internal partial class MeadowThings
     {
         var rawQuests = JsonConvert.SerializeObject(quests);
 
-        foreach (var onlinePlayer in OnlineManager.players.Where(onlinePlayer => !onlinePlayer.isMe)) 
+        foreach (var onlinePlayer in OnlineManager.lobby.participants.Where(onlinePlayer => !onlinePlayer.isMe)) 
             onlinePlayer.InvokeRPC(Rpc_HuntQuests, rawQuests);
     }
     [RPCMethod]
@@ -53,7 +53,7 @@ internal partial class MeadowThings
         if (onlinePrey == null)
             NoirCatto.LogSource.LogError($"Creature {prey.ID.ToString()} does not exist in online space!");
         else
-            foreach (var onlinePlayer in OnlineManager.players.Where(onlinePlayer => !onlinePlayer.isMe)) 
+            foreach (var onlinePlayer in OnlineManager.lobby.participants.Where(onlinePlayer => !onlinePlayer.isMe)) 
                 onlinePlayer.InvokeRPC(Rpc_TargetHunted, onlinePrey);
     }
     [RPCMethod]
