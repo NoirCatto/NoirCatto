@@ -8,21 +8,25 @@ namespace NoirCatto;
 
 internal partial class MeadowThings
 {
-    public static void RpcSend_HuntQuests(List<HuntQuestThings.HuntQuest> quests)
+    public static void RpcSend_HuntQuestsRequest()
+    {
+        OnlineManager.lobby.owner.InvokeRPC(Rpc_HuntQuestsRequest, OnlineManager.mePlayer);
+    }
+    [RPCMethod]
+    private static void Rpc_HuntQuestsRequest(RPCEvent rpc, OnlinePlayer onlinePlayer)
+    {
+        if (HuntQuestThings.Master == null) return;
+        RpcSend_HuntQuests(onlinePlayer, HuntQuestThings.Master.Quests.ToList());
+    }
+    
+    public static void RpcSend_HuntQuests(OnlinePlayer onlinePlayer, List<HuntQuestThings.HuntQuest> quests)
     {
         var rawQuests = JsonConvert.SerializeObject(quests);
-
-        foreach (var onlinePlayer in OnlineManager.lobby.participants.Where(onlinePlayer => !onlinePlayer.isMe)) 
-            onlinePlayer.InvokeRPC(Rpc_HuntQuests, rawQuests);
+        onlinePlayer.InvokeRPC(Rpc_HuntQuests, rawQuests);
     }
     [RPCMethod]
     private static void Rpc_HuntQuests(RPCEvent rpc, string rawQuests)
     {
-        HuntQuestThings.Master ??= new HuntQuestThings.HuntQuestMaster();
-        HuntQuestThings.Master.Quests.Clear();
-        HuntQuestThings.Master.Completed = false;
-        HuntQuestThings.Master.NextRewardPhase = HuntQuestThings.RewardPhase.Normal;
-
         var quests = JsonConvert.DeserializeObject<List<HuntQuestThings.HuntQuest>>(rawQuests);
         foreach (var quest in quests)
             HuntQuestThings.Master.Quests.Add(quest);

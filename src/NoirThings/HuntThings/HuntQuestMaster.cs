@@ -26,12 +26,15 @@ public partial class HuntQuestThings
 
         public void LoadOrCreateQuests()
         {
-            if (MeadowThings.IsMeadowOnline && !MeadowThings.IsLobbyMine)
-                return; //We'll get quests from lobby owner
-            
             Quests.Clear();
             Completed = false;
             NextRewardPhase = RewardPhase.Normal;
+            
+            if (MeadowThings.IsMeadowOnline && !MeadowThings.IsLobbyMine)
+            {
+                MeadowThings.RpcSend_HuntQuestsRequest(); //fetch the quests from lobby owner
+                return;
+            }
             
             var newQuests = new List<HuntQuest>();
 
@@ -45,9 +48,6 @@ public partial class HuntQuestThings
                 if (karmaCap >= 9) return; //Max karma reached!
                 newQuests = HuntQuestTemplates.FromKarma(karmaCap);
             }
-            
-            if (MeadowThings.IsMeadowOnline && MeadowThings.IsLobbyMine)
-                MeadowThings.RpcSend_HuntQuests(newQuests);
             
             foreach (var quest in newQuests)
                 Quests.Add(quest);
